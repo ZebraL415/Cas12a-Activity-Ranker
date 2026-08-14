@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cas12a-activity-ranker"
+version = "1.0.0"
+description = "Reproducible sequence-feature and inference toolkit for Cas12a activity ranking"
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.12,<3.13"
+dependencies = [
+  "numpy==1.26.4",
+  "pandas==2.2.2",
+  "scipy==1.13.1",
+  "scikit-learn==1.5.1",
+  "xgboost==2.1.4",
+  "catboost==1.2.8",
+  "joblib==1.4.2",
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: Apache Software License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Scientific/Engineering :: Bio-Informatics",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]

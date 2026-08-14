@@ -1,0 +1,17 @@
+.DS_Store
+__pycache__/
+*.py[cod]
+.venv/
+reproduced_run/
+predictions.csv
+
+# Build and test artifacts
+build/
+dist/
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Local research-preservation layer; deliberately excluded from public GitHub
+_local_only/

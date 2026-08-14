@@ -1,0 +1,14 @@
+# Store the largest research artifacts in Git LFS.
+data/processed/v2_2/EasyDesign_2024_V2-2_core_context_feature_table.csv filter=lfs diff=lfs merge=lfs -text
+data/raw/**/*.xlsx filter=lfs diff=lfs merge=lfs -text
+models/primary/xgboost_final.json filter=lfs diff=lfs merge=lfs -text
+models/supporting/catboost_final.cbm filter=lfs diff=lfs merge=lfs -text
+reports/**/*.pptx filter=lfs diff=lfs merge=lfs -text
+
+# Preserve line endings for scripts and documentation.
+*.py text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.toml text eol=lf
+*.tsv text eol=lf

@@ -1,0 +1,14 @@
+{
+  "data_file": "EasyDesign_2024_V2-2_core_context_feature_table.csv",
+  "data_sha256": "39cda8368c216784507ac002df687b28a4f9cc6f81e2b0e84043e45eddb4c1c0",
+  "train": 8417,
+  "validation": 2217,
+  "manifest_features": 188,
+  "active_features": 183,
+  "selection": "5 frozen target-grouped OOF folds",
+  "weighted_ensemble": {
+    "xgboost": 0.59,
+    "catboost": 0.41
+  },
+  "fixed_validation_not_used_for_weight_selection": true
+}

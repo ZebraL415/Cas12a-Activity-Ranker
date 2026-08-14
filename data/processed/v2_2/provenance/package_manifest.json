@@ -1,0 +1,26 @@
+{
+  "package_id": "Cas12a-Activity-Ranker-v1.0.0",
+  "profile": "V2-2 core plus sequence context",
+  "release_date": "2026-08-14",
+  "record_counts": {
+    "total": 11992,
+    "baseline_train": 8417,
+    "baseline_validation": 2217,
+    "external_scale_unconfirmed": 1358
+  },
+  "features": {
+    "manifest": 188,
+    "active_after_training_constant_filter": 183
+  },
+  "folds": {
+    "count": 5,
+    "grouping_unit": "target_sequence",
+    "purpose": "training-only out-of-fold predictions and ensemble-weight selection"
+  },
+  "formal_table": {
+    "path": "data/processed/v2_2/EasyDesign_2024_V2-2_core_context_feature_table.csv",
+    "sha256": "39cda8368c216784507ac002df687b28a4f9cc6f81e2b0e84043e45eddb4c1c0"
+  },
+  "validation_boundary": "Historical fixed validation; not an untouched external test set",
+  "external_boundary": "Scale-unconfirmed external records are preserved but excluded from final supervised claims"
+}

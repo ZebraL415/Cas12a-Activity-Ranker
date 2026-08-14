@@ -1,0 +1,19 @@
+Cas12a Activity Ranker
+Copyright 2026 Cas12a Activity Ranker contributors
+
+This product redistributes unmodified data files from the EasyDesign project,
+which is licensed under the Apache License, Version 2.0. The original project
+is available at https://github.com/scRNA-Compt/EasyDesign.
+
+This product also contains research data and artifacts adapted from the
+supporting information of:
+
+Baicheng Huang et al. (2024), "Deep learning enhancing guide RNA design for
+CRISPR/Cas12a-based diagnostics," iMeta 3(4):e214,
+https://doi.org/10.1002/imt2.214.
+
+The article and its supporting information are licensed under the Creative
+Commons Attribution 4.0 International License (CC BY 4.0).
+
+See THIRD_PARTY_NOTICES.md for file-level scope, checksums, attribution and a
+description of the changes made to the source data.

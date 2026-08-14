@@ -1,0 +1,255 @@
+Cas12a 项目最终汇报｜紧凑学术版完整讲稿 v5
+================================================
+
+定位：讲稿先行。PPT 只负责呈现讲稿里的证据、因果和边界，不用章节名替代叙事。
+建议时长：主讲 15–17 分钟；19 页主讲 + 5 页附录。
+讲者分工：A 讲 1–3、16–19；B 讲 4–6；C 讲 7–9；D 讲 10–15。
+
+贯穿全场的一句话：
+我们不是用模型替代实验，而是先把更可能产生强 Cas12a 荧光响应的 guide–target 候选排在前面，再把有限实验资源集中给它们。
+
+
+Slide 1｜有限实验预算，应先验证更可能产生强荧光的候选
+--------------------------------------------------------
+讲者：A｜建议 40 秒
+
+口播：
+一个目标序列往往对应很多可测试的 crRNA 候选，但实验时间和试剂只允许先测其中一部分。如果随机挑选，资源会浪费在低响应候选上。我们的目标不是替代湿实验，而是学习已有的 30 分钟荧光测量，把 guide–target 组合按潜在活性排序，帮助实验人员决定“先测谁”。最终内部证据覆盖 10,634 条统一尺度记录，因此这不是概念演示，而是一项有真实测量支撑的排序决策。
+
+PPT 必须出现：many candidates → model ranking → Top-k → wet-lab；10,634 measured internal records；“ranking support, not diagnosis/editing outcome”。
+
+转场：要理解模型为什么能排序，先看 Cas12a 怎样把两条序列的匹配关系转成荧光。
+
+
+Slide 2｜PAM—配对—激活—荧光，构成一条可学习样本
+--------------------------------------------------
+讲者：A｜建议 55 秒
+
+口播：
+Cas12a 在这里可以理解成一个分子传感器。目标 DNA 先通过 PAM 获得识别许可；crRNA 的 spacer 像地址，与 target 配对；匹配程度足以激活 Cas12a 后，它会切开单链 reporter，释放可测荧光。我们的标签就是这条 trans-cleavage 检测路径末端的 30 分钟连续活性，而不是细胞里的基因编辑效率。一条 guide 加一条 target 构成一行样本，错配、gap 和局部上下文从配对关系中被提取，模型输出连续分数并用于排序。
+
+PPT 必须出现：PAM → guide–target pairing → activation → reporter cleavage → fluorescence；同页框出“一行 = guide + target，y = 30 min activity”；一处 mismatch 与一处 gap；工具链小字。
+
+转场：既然输出既是连续值又要用于排序，我们必须先定义什么叫做成功。
+
+
+Slide 3｜候选排序与数值校准，是两个不同的成功标准
+----------------------------------------------
+讲者：A｜建议 45 秒
+
+口播：
+如果实验只验证前几条候选，我们最关心排序是否正确，所以主指标是 Spearman。但一个模型即使排序不错，也可能把预测压在很窄的区间，因此还要看 RMSE、MAE 和 R²。最终 Weighted 的 Spearman 数值最高，为 0.7693；XGBoost 的 RMSE 最低，为 0.4231。两者并不矛盾：一个回答“先测谁”，另一个回答“分数本身有多准”。在看到结果前先锁定这个标准，避免事后挑指标。
+
+PPT 必须出现：同排序、不同幅度的微型示意；Spearman 0.7693 与 XGB RMSE 0.4231 作为预告；ranking-only 与 calibrated score 两种用法。
+
+转场：接下来先不选模型，而是看验证集里到底混合了哪些不同难度的样本。
+
+
+Slide 4｜模型在 exact、mismatch 与 gap 上并不等强
+------------------------------------------
+讲者：B｜建议 55 秒
+
+口播：
+验证集不是均匀的一类样本。按最终对齐定义，632 条是 exact，1,353 条是无 gap 的单错配，77 条是双错配，另有 155 条含 gap。总体分数因此主要由单错配场景驱动。最终四模型的分层结果也不同：exact 中 CatBoost 为 0.634、XGBoost 为 0.616；单错配中 Weighted 为 0.747、XGBoost 为 0.744；gap 中 Equal 为 0.666、CatBoost 与 Weighted 约 0.663。这里不宣布局部冠军，而是说明同一个总体分数掩盖了不同识别情景。
+
+PPT 必须出现：exact / 1 mismatch / 2 mismatches / gap 的配对示意、n 与 target 数；XGB/Cat/Weighted 的最终分层 Spearman 点图；注明 gap 与 mismatch 分组定义不可简单相加。
+
+转场：分层差异告诉我们样本有结构；这种结构也决定验证分数能够代表哪一种泛化。
+
+
+Slide 5｜target 隔离不等于全新 guide 泛化
+------------------------------------
+讲者：B｜建议 50 秒
+
+口播：
+最终训练有 8,417 条，固定验证有 2,217 条，两部分没有 target 重叠，因此适合比较不同方案面对新 target 配对时的排序。但是 2,217 条验证记录中有 2,116 条，也就是 95.4%，使用训练中见过的 guide；1,008 个验证 guide 中也有 992 个曾出现。真正 unseen guide 只有 101 条、23 个独立 target。于是我们可以说 target-disjoint，但不能把结果扩写成“已证明对全新 guide 普遍泛化”。
+
+PPT 必须出现：train/validation target 组分离；0 target overlap；95.4% seen-guide records；101 records / 23 targets 置灰并标 descriptive only。
+
+转场：在明确证据边界后，我们冻结最终比较的数据版本和模型能看到的信息。
+
+
+Slide 6｜终局共享同一数据、同一标签与 183 项 active features
+--------------------------------------------------
+讲者：B｜建议 55 秒
+
+口播：
+权威数据总计 11,992 行，其中 8,417 条训练和 2,217 条固定验证构成 10,634 条内部比较数据；另有 1,358 条外部记录，因为标签尺度尚未确认而不进入终局成绩。feature manifest 允许 188 项变量，训练时过滤 5 个常量，实际使用 183 项。五类信号分别是 alignment 11、position 75、substitution 12、composition 32、context 58。ID、标签和 split 字段不进入模型。这样后面的差异才真正来自学习规则，而不是数据版本或输入列变化。
+
+PPT 必须出现：11,992 → 10,634 internal + 1,358 external not used；188 → 183；五类特征数量的堆叠条；excluded 字段。
+
+转场：数据和输入冻结以后，历史实验才能被还原成一条可信的连续问答链。
+
+
+Slide 7｜最大受控增益来自 sequence context，而非换模型
+----------------------------------------------
+讲者：C｜建议 50 秒
+
+口播：
+我们的历史路线不是模型动物园，而是四次连续提问：显式关系能做到多强；序列网络能否找到额外规律；融合能否补足短板；不同学习器的误差能否互补。第一轮给出了最强的受控转折：在固定划分、相同 XGBoost 下，仅增加 58 项安全 sequence-context features，Spearman 从 0.6928 提到 0.7706，增加 0.0778。更严格的 target-grouped OOF 为 0.7369，它是另一种协议，不与 fixed 0.7706 横比。这一步说明最有价值的是信息表达。
+
+PPT 必须出现：四问主干；V2-0 0.6928 → V2-1 0.7706；唯一改变 +58 context；Δρ +0.0778；grouped OOF 0.7369 放在隔离小框。
+
+转场：既然显式特征已经很强，网络必须提供 manifest 之外的新信息才有意义。
+
+
+Slide 8｜特征融合救回 CNN，但复杂网络仍未越过树模型
+--------------------------------------------
+讲者：C｜建议 55 秒
+
+口播：
+sequence-only CNN 的 Spearman 只有 0.479；加入显式特征后，Final CNN 提到 0.755，增量约 0.277。Transformer 为 0.429，BiGRU 为 0.471，都没有超过约 0.771 的树模型锚点。Final CNN 的 RMSE 为 0.438，也说明它恢复了有效预测，但没有形成终局优势。历史深度实验的真正价值，是证明显式配对关系不可替代，并排除“继续扩大网络就会自然变好”的路线。
+
+PPT 必须出现：0.479 → 0.755 fusion 箭头；Transformer 0.429、BiGRU 0.471；XGB anchor 0.771 虚线；CNN-1 0.254 只作 excluded 注记。
+
+转场：既然单纯复杂度不够，最后一个问题就变成：两个强学习器的错误能否互相抵消？
+
+
+Slide 9｜旧 0.793 只提出问题；统一 rerun 才给出结论
+-------------------------------------------
+讲者：C｜建议 50 秒
+
+口播：
+旧 XGBoost 与一个包含 CNN embedding 的 hybrid CatBoost 事后平均曾达到约 0.793。两者当时预测相关约 0.84，确实存在更大的互补空间，因此这个结果值得正式复核。但它混合了不同输入、模型版本、选择时点和不够统一的 provenance，不能放进最终排行榜。它唯一保留的作用，是提出“互补是否可重复”的问题。终局因此重跑 XGBoost、CatBoost、50/50 和 OOF 加权四项，统一使用同一 183 项输入。
+
+PPT 必须出现：旧 0.793 灰色 post-hoc；old correlation ≈0.84 → final ≈0.97；旧/新在 inputs、provenance、timing、protocol 上的四行差异；统一四项分支。
+
+转场：下面这页一次回答终局四项为什么可比、59/41 怎样选、有没有偷看验证集。
+
+
+Slide 10｜四项终局只改变学习规则；59/41 来自训练 OOF
+-----------------------------------------------
+讲者：D｜建议 60 秒
+
+口播：
+四项方案共用 8,417 条训练、2,217 条固定验证、183 项 active features、同一记录顺序和同一五项指标。XGBoost 与 CatBoost 是两个单模型；Equal 是逐记录 50/50；Weighted 的比例来自训练集内部五折 target-grouped OOF。我们只在 8,417 条 OOF 预测上搜索权重，最高点是 XGB 0.59、Cat 0.41，然后冻结并应用到固定验证。0.55 到 0.66 的权重与最高 Spearman 相差不超过 0.0001，所以 59/41 不是精确生物常数；Weighted 始终标为 exploratory。固定验证未参与本次选权，但它是历史使用的验证集，因此也不是 untouched test。
+
+PPT 必须出现：四公式；8,417 → five grouped folds → weight curve → freeze 59/41 → 2,217；0.55–0.66 near-flat；锁线隔离 validation。
+
+转场：在这把统一尺子上，排序与数值误差给出了略有不同的答案。
+
+
+Slide 11｜Weighted 排名略高，XGBoost 数值误差最低
+-----------------------------------------
+讲者：D｜建议 55 秒
+
+口播：
+四项 Spearman 分别为：CatBoost 0.7582、XGBoost 0.7682、Equal 0.7688、Weighted 0.7693。Weighted 比 XGBoost 只高 0.0011，Equal 只高 0.0005。与此同时，XGBoost 的 RMSE 0.4231、MAE 0.3279、R² 0.5584 均为四项最好；Weighted 的 RMSE 为 0.4241。组合微调了部分候选顺序，却没有改善整体数值拟合。因此结果不是 Weighted 战胜 XGBoost，而是排序数值略高与误差更稳健之间的条件式选择。
+
+PPT 必须出现：Spearman 精细点图；Spearman–RMSE 二维权衡；XGB/Weighted 的 MAE 与 R²小表；Weighted 虚线、Exploratory。
+
+转场：总体点估计之外，我们再检查这种选择是否随样本类型变化。
+
+
+Slide 12｜局部最佳模型随样本类型变化；新 guide 证据仍弱
+----------------------------------------------
+讲者：D｜建议 50 秒
+
+口播：
+终局分层进一步说明没有单一万能赢家。exact 中 CatBoost 0.634 略高于 XGB 0.616；单错配中 Weighted 0.747 略高；双错配中 XGB 0.511 更高；gap 中 Equal 0.666 最高。unseen guide 的点估计看似 CatBoost 0.344 较高，但只有 101 条记录和 23 个独立 target，少于 30 个 cluster，因此只能描述，不画置信区间，也不能声称新 guide 泛化更强。分层的正确作用是标出模型适用情景，而不是制造更多冠军。
+
+PPT 必须出现：四组最终 subgroup dot matrix + n/targets；unseen guide 单独灰框；“descriptive only”。
+
+转场：为什么排序尚可，RMSE 却没有同步改善？看预测分布就很清楚。
+
+
+Slide 13｜总体排序可恢复，但极端活性被系统压向中间
+------------------------------------------
+讲者：D｜建议 50 秒
+
+口播：
+把全部 2,217 条真实值和预测值画在同一坐标，XGBoost 与 Weighted 都呈现明显上升趋势，对应约 0.77 的 Spearman；但预测范围明显变窄。真实值从负 4.203 到负 0.458，XGBoost 只覆盖负 3.733 到负 1.377。最低 10% 被平均高估 0.282，最高 10% 被平均低估 0.675；Weighted 的压缩略更明显。模型能回答“谁更高”，但尚不能忠实恢复极端幅度，这就是组合排序略升而 RMSE 不降的行为基础。
+
+PPT 必须出现：XGB/Weighted 两个全样本密度散点、同尺度、1:1 线；真实/预测范围；top/bottom decile bias；高低极端半透明标注。
+
+转场：CatBoost 算法不同，为什么平均仍修不好这种压缩？关键不是名字，而是错误方向。
+
+
+Slide 14｜误差高度同向，增益既小又未脱离抽样波动
+----------------------------------------
+讲者：D｜建议 60 秒
+
+口播：
+最终 XGBoost 与 CatBoost 的预测 Pearson 为 0.972，残差 Pearson 为 0.971；91.5% 的记录上，两者误差方向相同。于是平均只能微调少数排序，无法让大多数错误互相抵消。再按 1,796 个 target 做 2,000 次成对 cluster bootstrap：Equal 相对 XGB 的 ΔSpearman 为 0.0005，95% 区间负 0.0032 到正 0.0044；Weighted 为 0.0011，区间负 0.0020 到正 0.0043，两条都跨零。因此可以说 numerically higher、gain is tiny，不能说 significant、stable 或 statistically useful。
+
+PPT 必须出现：prediction/residual 两个密度图；0.972 / 0.971 / 91.5%；两条 CI；因果箭头 high correlation → little cancellation → tiny Δρ → CI crosses 0。
+
+转场：新增终局材料最重要的作用，是把旧结论分成保留、修正和推翻三类。
+
+
+Slide 15｜最终材料保留了什么、修正了什么、推翻了什么
+--------------------------------------------
+讲者：D｜建议 55 秒
+
+口播：
+三类结论现在可以被清楚分开。保留的是：显式关系与 sequence context 是主要信号来源，XGBoost 是强锚点，复杂网络没有自动获益。修正的是：XGB 与 CatBoost 并非明显互补；平均只能微调排序，不能改善绝对误差。被推翻或降级的是：旧 0.793 不能作为终局成绩，59/41 不是确认性最佳权重，固定验证也不能支持全新 guide 的普遍外推。终局复核没有制造突破，但把哪些话能说、哪些话不能说固定下来。
+
+PPT 必须出现：保留 / 修正 / 推翻三列；每列一个代表数字和一个证据文件；底部“因此主叙事从追逐最高分，转为解释证据强度”。
+
+转场：这也决定我们应该怎样定义项目的创新，而不是把创新等同于一个新网络。
+
+
+Slide 16｜创新在可审计的证据闭环，而非更大的网络
+----------------------------------------
+讲者：A｜建议 50 秒
+
+口播：
+项目的创新有四环。第一，把 Cas12a 分子检测机制翻译成 30 分钟连续活性排序任务；第二，把 alignment、position、substitution、composition 和 context 固化为 188 项 manifest、183 项 active input；第三，用实验日志把显式特征、序列网络、融合和组合整理成连续问答，而不是只报成功模型；第四，对 2,217 行预测做相关性、范围压缩和 2,000 次 cluster bootstrap 审计。我们没有发明新的通用算法，贡献是一个面向实验决策、可追溯且能解释失败的证据闭环。
+
+PPT 必须出现：biology mapping → manifest → experiment log → output audit 四环；每环一个产物图标和数字；工具链 pandas/NumPy、XGB/Cat/TensorFlow、SciPy/sklearn、joblib。
+
+转场：证据闭环最终必须落到一个清晰、可执行的模型选择。
+
+
+Slide 17｜主模型选 XGBoost；平均方案降到敏感性层级
+------------------------------------------
+讲者：A｜建议 45 秒
+
+口播：
+正式主模型选择 XGBoost，因为它在 RMSE、MAE 和 R² 上最稳健，Spearman 只比最高点低 0.0011。Equal 50/50 不需要调权，可作为简单敏感性检查，但增量只有 0.0005。OOF Weighted 记录数值上的排序上限，却因为选权、平坦权重区和 CI 跨零而保持 exploratory。若任务只是 Top-k，可比较三者排序是否一致；默认报告与后续使用仍以 XGBoost 为锚点。
+
+PPT 必须出现：Primary / Sensitivity / Exploratory 三层证据阶梯；每层数字理由；旧 0.793 放最下方灰色 Post-hoc，不参与选择。
+
+转场：这个选择能被怎样复核，又还有哪些工程边界？
+
+
+Slide 18｜预测与指标可审计，但外推与端到端复训仍有限
+--------------------------------------------
+讲者：A｜建议 50 秒
+
+口播：
+当前交付包足以审计 2,217 行逐样本预测、final metrics、特征 manifest、OOF folds、weight search 和模型二进制；所有主数字都能从预测重新计算。但 ZIP 仍缺少可配置的完整 source-data 路径、requirements 版本锁和全部后处理记录，因此不能说任何环境都能从零端到端重训。更重要的是，外部 1,358 行标签尺度未确认，unseen guide 只有 23 个 target。我们应准确区分“结果可复算”与“独立全流程复训/外推已完成”。
+
+PPT 必须出现：可审计清单打勾；仍缺内容警示；2,217 predictions / manifest / folds / artifacts；prediction-and-metric reproducibility vs end-to-end retraining。
+
+转场：最后回到开场的实验决策，用三句话收束整个项目。
+
+
+Slide 19｜模型先排序，实验再验证；三句话收束全项目
+--------------------------------------
+讲者：A｜建议 45 秒
+
+口播：
+第一，guide–target 的配对关系能够被结构化，并预测 30 分钟 Cas12a 荧光活性；最大历史受控提升来自 context，ΔSpearman 为 0.0778。第二，最终 XGBoost 是最稳健主模型；Weighted 只把排序提高 0.0011，而且区间跨零。第三，95.4% 的验证记录使用见过的 guide，因此模型服务于当前协议下的候选优先级，不替代实验，也不宣称普遍外推。流程最终回到开场：many candidates 先由 XGBoost 排序，Top-k 再进入湿实验验证。
+
+PPT 必须出现：首尾闭环流程；三条 takeaway 与三个数字；Q&A 入口 Biology / Validation / Model error。
+
+
+附录安排
+--------
+A1 最终四项完整五指标表：四模型、Spearman/Pearson/RMSE/MAE/R²、证据身份。
+A2 历史实验证据分层：Main verified / Supplementary logged / Excluded。
+A3 188-feature manifest 五类构成：188 manifest → 183 active，五常量过滤。
+A4 OOF 权重曲线：best 0.59，within 0.0001 区间 0.55–0.66，验证锁线。
+A5 生物词典与复现边界：PAM、crRNA、target、reporter、activity；可审计与不可独立复训。
+
+
+全组统一措辞
+------------
+- 说 Cas12a molecular detection / 诊断反应活性；不说 editing efficiency。
+- 说 fluorescence-derived 30-minute continuous activity；不擅自说 patient diagnostic accuracy。
+- 说 historical fixed validation；不说 untouched/blind test。
+- 说 numerically or marginally higher；不说 significant/stable/statistically useful。
+- 说 XGBoost primary，Equal sensitivity，Weighted exploratory；不把 0.7693 做成冠军视觉。
+- 旧 0.793 只作 post-hoc motivation；不进入最终排行榜。
+- target-disjoint 不等于 guide-disjoint；不宣称 universal unseen-guide generalization。

@@ -19,7 +19,7 @@ SHA-256：`39cda8368c216784507ac002df687b28a4f9cc6f81e2b0e84043e45eddb4c1c0`
 
 每个输入表示 25 个已对齐位置。本项目数据中 1–4 位为 PAM block，5–25 位为 spacer block。`-` 是 alignment gap/bulge，不是 frameshift。外部含 gap 的 target 必须预先对齐，本库不会从变长序列自行猜测 alignment。
 
-OOF 五折按 target sequence 冻结，同一 target 不跨 fold。固定验证有 1,796 个不同 target，最终 59/41 权重选择没有读取该验证集；但该验证集在早期已经被查看，因此不能称为 untouched test。
+OOF 五折按 target sequence 冻结，同一 target 不跨 fold。固定验证有 1,796 个不同 target，v1.5 D 的 0.35/0.59/0.06 权重选择没有读取该验证集；但该验证集在早期已经被查看，因此不能称为 untouched test。
 
 ## 来源血缘与再分发
 

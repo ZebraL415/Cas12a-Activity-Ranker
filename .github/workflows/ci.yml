@@ -2,7 +2,7 @@ name: test
 
 on:
   push:
-    branches: [main]
+    branches: [main, "codex/v1.5-d-ensemble"]
   pull_request:
   workflow_dispatch:
 
@@ -36,6 +36,9 @@ jobs:
           PYTHONPATH: src
         run: python -m unittest discover -s tests -v
 
+      - name: Run bundled end-to-end example
+        run: cas12a-ranker self-test
+
       - name: Verify repository artifacts
         env:
           PYTHONPATH: src
@@ -44,5 +47,5 @@ jobs:
       - name: Verify training contract
         run: python scripts/train_final_four.py --verify-only
 
-      - name: Smoke-test both learners
-        run: python scripts/train_final_four.py --smoke-test
+      - name: Recompute v1.5 metrics without bootstrap latency
+        run: python scripts/reproduce_metrics.py --bootstrap 20

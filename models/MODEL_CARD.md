@@ -1,40 +1,60 @@
-# Model card
+# Model card: v1.5 D ensemble
 
 ## Intended use
 
-Rank candidate 25-position Cas12a guide–target pairs by a fluorescence-derived continuous diagnostic reaction activity score, so higher-priority candidates can be tested first. The supported deployment artifact is `primary/xgboost_final.json`.
+Predict a continuous fluorescence-derived Cas12a molecular-detection activity score for an already aligned 25-position crRNA–target pair, and rank multiple rows within the same input file. SCC/Spearman and PCC/Pearson are co-primary evaluation outcomes.
 
-## Inputs and preprocessing
+This model is not intended for genome-editing efficiency, patient-level diagnosis, clinical decision-making or unaligned sequence search.
 
-The external interface accepts `crRNA_sequence` and an aligned target. The feature builder creates 188 pair-alignment, positional, substitution, composition and sequence-context variables. Five training constants are absent from the deployed matrix; the ordered 183 active inputs and missing-value medians are frozen in `model_input_metadata.json` and `training_medians.csv`.
+## Model
 
-For gap-containing targets, callers must supply the 25-position alignment. U is normalized to T. Ambiguous bases are rejected rather than silently imputed.
+```text
+D = 0.35 × XGBoost + 0.59 × LightGBM + 0.06 × MLP
+```
 
-## Training and evaluation
+All three components use the same 183 active sequence-derived features. The MLP artifact includes its fitted `StandardScaler`. Artifact paths, SHA-256 values and the frozen software environment are recorded in `d_model_metadata.json`.
 
-- Training: 8,417 records.
-- Evaluation: 2,217 historical fixed-validation records, 1,796 distinct target sequences.
-- Final OOF procedure: five frozen target-grouped folds used for ensemble-weight selection.
-- Primary XGBoost: 1,100 trees, learning rate 0.02, max depth 7, histogram method, seed 42.
-- Supporting CatBoost: 1,000 iterations, learning rate 0.02, depth 9, seed 42.
+## Inputs
 
-The fixed validation set did not participate in the final 59/41 weight search, but it had been inspected in earlier development and is not an untouched test set.
+The file interface requires `record_id`, `crRNA_sequence` and `target_aligned_25`. The two sequence columns represent exactly 25 aligned positions. The feature builder derives 188 alignment, position, substitution, composition and context variables; five training constants are filtered before model inference.
 
-## Model choice
+U is normalized to T. Ambiguous bases and incorrect lengths are rejected with a row-level error report. v1.5 does not infer alignment or accept precomputed mapping columns.
 
-XGBoost is primary because it has the best RMSE, MAE and R², while the weighted ensemble's Spearman gain is only `0.001111` and its paired target-cluster bootstrap interval crosses zero. CatBoost, equal averaging and OOF weighting are retained for sensitivity analysis.
+## Training and selection
+
+- Training partition: 8,417 records.
+- Weight-selection protocol: five frozen target-grouped OOF folds.
+- Active deployed inputs: 183, in a frozen order.
+- Weight grid: nonnegative 0.01 increments summing to 1.
+- Selected weights: XGBoost 0.35, LightGBM 0.59, MLP 0.06.
+- Evaluation: 2,217 historical fixed-validation records across 1,796 target clusters.
+
+Fixed-validation labels were not used in the v1.5 weight search. The split had nevertheless been observed during earlier project development and is not an untouched external test.
+
+## Performance
+
+| Protocol | SCC | PCC | RMSE | MAE | R² |
+|---|---:|---:|---:|---:|---:|
+| Training target-group OOF | 0.7410 | 0.7179 | 0.4507 | 0.3471 | 0.5140 |
+| Historical fixed validation | 0.7709 | 0.7538 | 0.4205 | 0.3260 | 0.5639 |
+
+The D ensemble is numerically best on SCC, PCC, RMSE and R² among its three components in the fixed-validation comparison. LightGBM has a marginally lower MAE.
 
 ## Limitations
 
-- The score is assay-specific and not editing efficiency, patient-level diagnostic accuracy or a mechanistic causal effect.
-- 95.4% of fixed-validation records use guides observed during training; evidence for wholly unseen guides is limited.
-- Predictions compress the extreme activity range.
-- Model complementarity is weak because XGBoost and CatBoost predictions/residuals are highly correlated.
-- Generalization to a new assay scale, ortholog or sequence-preparation protocol requires independent calibration and validation.
+- Activity is assay- and normalization-specific.
+- Most fixed-validation rows use guides seen in training, so new-guide evidence is limited.
+- Within-file ranks are relative and are not probabilities or calibrated experimental thresholds.
+- New orthologs, assay scales or preprocessing protocols need independent validation.
+- The historical fixed validation is not an external prospective cohort.
 
-## Artifact formats
+## Artifacts
 
-- `xgboost_final.json`: supported version-stable Booster artifact.
-- `catboost_final.cbm`: supported native supporting-model artifact.
+- `primary/d_xgboost.json`: native XGBoost Booster;
+- `primary/d_lightgbm.txt`: native LightGBM Booster;
+- `primary/d_mlp_pipeline.joblib`: fitted StandardScaler + MLP pipeline;
+- `d_model_metadata.json`: weights, metrics, hashes, environment and scope;
+- `model_input_metadata.json`: ordered active features;
+- `training_medians.csv`: frozen missing-value fallback.
 
-Native predictions were checked against all 2,217 saved validation predictions with maximum absolute difference below `1e-6`.
+All three native component predictions and the combined D output are checked against all 2,217 frozen validation rows with maximum absolute difference below `1e-6`.

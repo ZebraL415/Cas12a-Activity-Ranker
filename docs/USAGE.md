@@ -1,58 +1,81 @@
 # Usage guide
 
-## 1. Prepare an input CSV
+## Input contract
+
+Use one row per aligned crRNA–target pair in CSV, TSV or XLSX format.
 
 ```csv
-candidate_id,crRNA_sequence,target_aligned_25
-candidate_01,TTTGTTGGGGCGTCCTTAGACGCCA,TTTGTTGGGGCGTCCTTAGACGCCA
-candidate_02,TTTGGGCTAGGTGTGATAGGAATGG,TTTGGGCTAGGAGTGATAGGAATGG
+record_id,crRNA_sequence,target_aligned_25,sample_group
+candidate_01,TTTGTTGGGGCGTCCTTAGACGCCA,TTTGTTGGGGCGTCCTTAGACGCCA,screen_1
+candidate_02,TTTGTTGGGGCGTCCTTAGACGCCA,TTTGTTGGGGCGTCCTTAGTCGCCA,screen_1
 ```
 
-Both biological columns represent 25 aligned positions. `crRNA_sequence` accepts A/C/G/T or U. `target_aligned_25` additionally accepts `-` for an existing target gap. Input identifiers and other metadata columns are copied to the output.
+Required columns:
 
-## 2. Run inference
+- `record_id`: nonempty and unique within the file;
+- `crRNA_sequence`: exactly 25 aligned positions using A/C/G/T; U is accepted as T;
+- `target_aligned_25`: exactly 25 aligned positions using A/C/G/T and optional `-` gaps.
+
+Headers are case-sensitive. All other columns and the original row order are preserved. v1.5 does not accept precomputed mapping columns and does not infer a biological alignment.
+
+## Run prediction
 
 ```bash
-python scripts/predict_external.py --input candidates.csv --output predictions.csv
+cas12a-ranker predict --input candidates.csv --output predictions.csv
+cas12a-ranker predict --input candidates.tsv --output predictions.tsv
+cas12a-ranker predict --input candidates.xlsx --sheet Sheet1 --output predictions.xlsx
 ```
 
-Output columns:
+If `--output` is omitted, the result is written next to the input as `<stem>_cas12a_predictions.<extension>`.
+
+The main columns are:
 
 | Column | Interpretation |
 |---|---|
-| `prediction_xgboost_primary` | Supported primary activity score |
-| `prediction_catboost_supporting` | Supporting-model score |
-| `prediction_equal_50_50_sensitivity` | Equal-average sensitivity result |
-| `prediction_oof_weighted_exploratory` | 59/41 exploratory ensemble result |
-| `rank_xgboost_descending` | Within-file candidate rank; 1 is highest |
+| `cas12a_activity_score` | Continuous v1.5 D-ensemble activity prediction |
+| `cas12a_activity_rank` | Descending within-file rank; 1 is highest |
+| `cas12a_prediction_status` | `success` for valid rows |
+| `cas12a_model_route` | `sequence_d_v1_5` for the default path |
+| `cas12a_model_version` | Frozen release version |
+| `cas12a_prediction_xgboost` | D-model XGBoost component |
+| `cas12a_prediction_lightgbm` | D-model LightGBM component |
+| `cas12a_prediction_mlp` | D-model MLP component |
+| `cas12a_warning_codes` | Empty for a normal prediction; explanation for a retained invalid row |
 
-Scores are meaningful for ranking within the studied assay representation. They are not calibrated probabilities and should not be interpreted as patient-level diagnostic accuracy.
+Activity scores are assay-scale regression outputs, not probabilities. Ranking compares only rows supplied in the same file.
 
-## 3. Handle gaps correctly
+## Input errors
 
-For a no-gap target, `target_sequence` may replace `target_aligned_25` if it is exactly 25 nt. For gap-containing examples, supply `target_aligned_25` explicitly. This repository performs feature extraction after alignment; it is not an alignment program.
+The default mode stops before model inference and writes `<stem>_input_errors.csv` if any row is invalid. The report identifies `record_id`, source row, field and reason.
 
-## 4. Validate an installation
+For data triage only, valid rows may be predicted while invalid rows are retained:
 
 ```bash
-python scripts/predict_external.py \
-  --input data/examples/external_sequence_pairs.csv \
-  --output /tmp/cas12a_predictions.csv
-
-python scripts/verify_repository.py
+cas12a-ranker predict --input candidates.csv --on-invalid keep
 ```
 
-The example predictions are frozen in `data/examples/expected_predictions.csv`.
+Invalid rows receive `cas12a_prediction_status=invalid_input` and no activity score. Missing headers and reserved `cas12a_` output columns remain fatal. To intentionally replace old `cas12a_` results, pass `--overwrite-results`.
 
-## 5. Use the Python API
+## Minimal verification
+
+```bash
+cas12a-ranker self-test
+cas12a-ranker predict \
+  --input data/examples/minimal_input.csv \
+  --output minimal_output.csv
+```
+
+The frozen expected file is `data/examples/minimal_expected_output.csv`.
+
+## Python API
 
 ```python
 import pandas as pd
-from cas12a_ml import Cas12aPredictor, build_feature_frame
+from cas12a_ml import predict_file
 
-pairs = pd.read_csv("candidates.csv")
-features = build_feature_frame(pairs)
-predictions = Cas12aPredictor(".").predict(pairs)
+predict_file("candidates.csv", "predictions.csv")
+predictions = pd.read_csv("predictions.csv")
+print(predictions[["record_id", "cas12a_activity_score", "cas12a_activity_rank"]])
 ```
 
-When the package has not been installed, run from the repository root with `PYTHONPATH=src` or use the CLI script, which configures the source path automatically.
+Advanced users can call `Cas12aPredictor.predict(frame)` directly. The supported end-user interface remains table-in/table-out so identifiers, metadata and row order stay auditable.

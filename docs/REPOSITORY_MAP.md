@@ -18,16 +18,19 @@ Cas12a-Activity-Ranker/
 │   └── metadata/                  Public file checksums and data roles
 ├── src/cas12a_ml/
 │   ├── features.py                Sequence pair -> 188 frozen features
-│   └── predict.py                 Native XGBoost/CatBoost inference
+│   ├── predict.py                 Frozen D-ensemble and legacy inference
+│   ├── io.py                      Validated CSV/TSV/XLSX table interface
+│   └── cli.py                     `cas12a-ranker` command and self-test
 ├── scripts/
 │   ├── predict_external.py        External-use CLI
-│   ├── train_final_four.py        Full final comparison/retraining
-│   ├── reproduce_metrics.py       Metrics + target-cluster bootstrap
+│   ├── train_final_four.py        Archived v1.0 comparison/retraining
+│   ├── reproduce_metrics.py       v1.5 metrics + target-cluster bootstrap
 │   ├── verify_repository.py       End-to-end artifact validation
 │   └── generate_sha256_manifest.py
 ├── models/
-│   ├── primary/                   Supported XGBoost JSON model
-│   ├── supporting/                Supporting CatBoost CBM model
+│   ├── primary/                   v1.5 XGBoost, LightGBM and MLP models
+│   ├── supporting/                Legacy v1.0 CatBoost model
+│   ├── d_model_metadata.json      D weights, metrics, hashes and environment
 │   ├── training_medians.csv       Frozen missing-value preprocessing
 │   └── model_input_metadata.json  Ordered 183 active features
 ├── results/                       Frozen and independently recomputed evidence
@@ -41,7 +44,7 @@ Cas12a-Activity-Ranker/
 
 `data/processed/v2_2/feature_manifest.csv` defines 188 candidate inputs. Five training-constant columns are removed; `models/model_input_metadata.json` freezes the remaining order of 183 features. `src/cas12a_ml/features.py` reconstructs the feature matrix from a sequence pair, and `src/cas12a_ml/predict.py` applies the stored medians and native models.
 
-`results/fixed_validation_predictions.csv` is the regression oracle used to test model portability. Public integrity is tracked by `data/metadata/sha256_manifest.tsv`.
+`results/v1_5_d_ensemble/fixed_validation_predictions.csv` is the v1.5 regression oracle used to test model portability. The same directory contains all OOF predictions and 5,151 tested weight combinations. Public integrity is tracked by `data/metadata/sha256_manifest.tsv`.
 
 ## Local-only preservation layer
 

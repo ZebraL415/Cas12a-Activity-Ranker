@@ -2,6 +2,9 @@
 data/processed/v2_2/EasyDesign_2024_V2-2_core_context_feature_table.csv filter=lfs diff=lfs merge=lfs -text
 data/raw/**/*.xlsx filter=lfs diff=lfs merge=lfs -text
 models/primary/xgboost_final.json filter=lfs diff=lfs merge=lfs -text
+models/primary/d_xgboost.json filter=lfs diff=lfs merge=lfs -text
+models/primary/d_lightgbm.txt filter=lfs diff=lfs merge=lfs -text
+models/primary/d_mlp_pipeline.joblib filter=lfs diff=lfs merge=lfs -text
 models/supporting/catboost_final.cbm filter=lfs diff=lfs merge=lfs -text
 reports/**/*.pptx filter=lfs diff=lfs merge=lfs -text
 

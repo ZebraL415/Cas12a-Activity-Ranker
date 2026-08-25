@@ -52,7 +52,7 @@ A gap (`-`) is an alignment gap/bulge, not a frameshift. The repository accepts 
 
 ## Validation protocol
 
-Five OOF folds are frozen by target sequence. A target never occurs in more than one training fold. The historical fixed validation set contains 1,796 distinct target sequences and is not used to select the final 59/41 ensemble weight.
+Five OOF folds are frozen by target sequence. A target never occurs in more than one training fold. The historical fixed validation set contains 1,796 distinct target sequences and was not used to select the v1.5 D weights (0.35 XGBoost, 0.59 LightGBM and 0.06 MLP).
 
 Because that validation set was inspected during earlier model development, it is not described as an untouched test set. Broad claims should be reserved for a future independently collected assay cohort.
 

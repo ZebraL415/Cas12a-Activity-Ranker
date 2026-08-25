@@ -1,69 +1,21 @@
 # Cas12a Activity Ranker
 
-**A reproducible machine-learning toolkit for ranking Cas12a crRNA–target pairs by fluorescence-derived molecular-detection activity.**
+**Predict a continuous Cas12a fluorescence-derived activity value and rank aligned crRNA–target pairs from a CSV, TSV or XLSX file.**
 
-[中文说明](README_zh.md) · [Usage guide](docs/USAGE.md) · [Data](docs/DATA.md) · [Model card](models/MODEL_CARD.md) · [Results](docs/RESULTS.md) · [License](LICENSE)
+[中文说明](README_zh.md) · [Usage](docs/USAGE.md) · [Model card](models/MODEL_CARD.md) · [Results](docs/RESULTS.md) · [Reproducibility](docs/REPRODUCIBILITY.md)
 
-## Overview
+> **Scope:** this research tool predicts activity in the studied Cas12a molecular-detection assay. It does not predict genome-editing efficiency, patient diagnosis or clinical accuracy.
 
-Cas12a-based molecular detection begins with a design problem: one target sequence can produce many candidate crRNAs, but experimentally testing every candidate is slow. This project learns from measured fluorescence reactions and assigns each crRNA–target pair a continuous activity score, allowing promising candidates to be tested first.
+## Quick start
 
-The repository includes the processed research dataset, exact feature reconstruction, deployable native models, command-line inference, frozen predictions, uncertainty analysis and reproducibility tests.
+### 1. Install
 
-> **Scope:** this is a research model for candidate ranking in a Cas12a fluorescence assay. It does not predict genome-editing efficiency, patient diagnosis, or clinical performance.
-
-## From sequence pair to ranked candidate
-
-```mermaid
-flowchart LR
-    A["crRNA sequence"] --> C["25-position guide–target pair"]
-    B["Aligned target sequence"] --> C
-    C --> D["188 sequence-derived features"]
-    D --> E["XGBoost primary model"]
-    D -. reference .-> F["CatBoost supporting model"]
-    E --> G["Predicted activity score"]
-    F -. sensitivity analysis .-> G
-    G --> H["Rank candidates for experimental testing"]
-```
-
-The 188 candidate features describe five types of signal:
-
-| Feature family | Count | Examples |
-|---|---:|---|
-| Pair alignment | 11 | Total differences, substitutions and target gaps |
-| Position-specific events | 75 | Difference/substitution/gap indicators at each of 25 positions |
-| Substitution type | 12 | A→C, A→G, … direct substitution counts |
-| Sequence composition | 32 | GC content, entropy, base fractions and homopolymers |
-| Sequence context | 58 | Local GC summaries and selected k-mer frequencies |
-
-Five features are constant in training, so the deployed matrix contains 183 ordered inputs.
-
-## Performance
-
-All models below use the same 8,417 training records, 188-feature manifest and 2,217-record historical fixed validation split.
-
-| Model | Spearman ↑ | RMSE ↓ | MAE ↓ | R² ↑ | Repository role |
-|---|---:|---:|---:|---:|---|
-| **XGBoost** | 0.7682 | **0.4231** | **0.3279** | **0.5584** | **Primary model** |
-| CatBoost | 0.7582 | 0.4330 | 0.3396 | 0.5376 | Supporting model |
-| Equal 50/50 ensemble | 0.7688 | 0.4249 | 0.3308 | 0.5547 | Sensitivity analysis |
-| OOF-weighted 59/41 | **0.7693** | 0.4241 | 0.3298 | 0.5563 | Exploratory comparison |
-
-The weighted ensemble is numerically highest in Spearman correlation, but its improvement over XGBoost is only `+0.0011`. A paired target-cluster bootstrap gives a 95% interval of `[-0.0020, 0.0043]`, so the improvement is not treated as established. XGBoost remains the primary model because it has the best absolute-error metrics and the simplest defensible deployment path.
-
-See [Results](docs/RESULTS.md) for full metrics and interpretation.
-
-## Installation
-
-### Requirements
-
-- Python 3.12
-- macOS, Linux or Windows
-- Approximately 1 GB free memory for standard inference
+Python 3.12 is supported.
 
 ```bash
 git clone https://github.com/ZebraL415/Cas12a-Activity-Ranker.git
 cd Cas12a-Activity-Ranker
+git lfs pull
 
 python3.12 -m venv .venv
 source .venv/bin/activate        # Windows: .venv\Scripts\activate
@@ -72,143 +24,142 @@ pip install -r requirements.txt
 pip install --no-deps -e .
 ```
 
-On macOS, install the OpenMP runtime required by XGBoost:
+On macOS, XGBoost may also require `brew install libomp`.
+
+### 2. Check the installation
 
 ```bash
-brew install libomp
+cas12a-ranker self-test
 ```
 
-## Quick start
+A successful installation prints `PASS Cas12a Activity Ranker self-test` after running four bundled sequence pairs through the complete pipeline.
 
-The input CSV needs one row per candidate pair.
+### 3. Prepare a table
 
-| Column | Required | Description |
-|---|---:|---|
-| `crRNA_sequence` | Yes | Exactly 25 aligned positions. A/C/G/T; U is accepted and converted to T. |
-| `target_aligned_25` | Yes for gaps | Exactly 25 aligned positions. A/C/G/T and `-` are accepted. |
-| `target_sequence` | Alternative | May replace `target_aligned_25` only for a 25-nt no-gap target. |
-| Any other columns | No | Preserved in the prediction output. |
+Each row is one already aligned crRNA–target pair. These column names are required:
 
-Run the included example:
+| Column | Rule |
+|---|---|
+| `record_id` | Nonempty and unique within the file |
+| `crRNA_sequence` | Exactly 25 aligned positions; A/C/G/T, with U accepted as T |
+| `target_aligned_25` | Exactly 25 aligned positions; A/C/G/T or `-` |
+
+Example:
+
+```csv
+record_id,crRNA_sequence,target_aligned_25,sample_note
+candidate_01,TTTGTTGGGGCGTCCTTAGACGCCA,TTTGTTGGGGCGTCCTTAGACGCCA,exact pair
+candidate_02,TTTGTTGGGGCGTCCTTAGACGCCA,TTTGTTGGGGCGTCCTTAGTCGCCA,one mismatch
+```
+
+Any additional columns are preserved unchanged.
+
+### 4. Predict
 
 ```bash
-python scripts/predict_external.py \
-  --input data/examples/external_sequence_pairs.csv \
-  --output predictions.csv
+cas12a-ranker predict --input candidates.csv --output predictions.csv
 ```
 
-The main output is `prediction_xgboost_primary`. Higher scores rank ahead of lower scores. The other prediction columns are reference/sensitivity outputs.
+CSV, TSV and XLSX input/output are supported. The output has the same rows, order and original columns, with results appended:
 
-For gap-containing targets, supply an already aligned 25-position target. The software deliberately does not guess a biological alignment.
+| Main output | Meaning |
+|---|---|
+| `cas12a_activity_score` | v1.5 continuous activity prediction |
+| `cas12a_activity_rank` | Descending rank within this input file; 1 is highest |
+| `cas12a_prediction_status` | `success` or an explicit invalid-input status |
+| `cas12a_model_route` | Model path used for this row |
+| `cas12a_model_version` | Frozen model release |
 
-## Python usage
+The component predictions are also included for audit. Legacy v1.0 output columns remain available so existing workflows do not break.
 
-```python
-from pathlib import Path
-import pandas as pd
+If `--output` is omitted, the program creates `<input_name>_cas12a_predictions.<extension>`. Invalid files produce a row-level `<input_name>_input_errors.csv` report instead of silently changing data.
 
-from cas12a_ml import Cas12aPredictor
+## What v1.5 runs
 
-repo = Path(".").resolve()
-pairs = pd.DataFrame(
-    {
-        "candidate_id": ["candidate_01"],
-        "crRNA_sequence": ["TTTGTTGGGGCGTCCTTAGACGCCA"],
-        "target_aligned_25": ["TTTGTTGGGGCGTCCTTAGACGCCA"],
-    }
-)
-
-predictions = Cas12aPredictor(repo).predict(pairs)
-print(predictions[["candidate_id", "prediction_xgboost_primary"]])
+```mermaid
+flowchart LR
+    A["Aligned table"] --> B["Validate every row"]
+    B --> C["Rebuild 188 sequence features"]
+    C --> D1["XGBoost"]
+    C --> D2["LightGBM"]
+    C --> D3["MLP"]
+    D1 --> E["35%"]
+    D2 --> E2["59%"]
+    D3 --> E3["6%"]
+    E --> F["Continuous activity score"]
+    E2 --> F
+    E3 --> F
+    F --> G["Within-file rank"]
+    G --> H["Original table + appended results"]
 ```
 
-When working directly from a clone without installing the package, either use `scripts/predict_external.py` or set `PYTHONPATH=src`.
+The v1.5 D model combines three learners trained on the same audited sequence representation:
 
-## Reproduce and verify
-
-```bash
-# Verify data hashes, feature reconstruction, models and frozen predictions
-python scripts/verify_repository.py
-
-# Run unit tests
-python -m unittest discover -s tests -v
-
-# Verify the final training input contract
-python scripts/train_final_four.py --verify-only
-
-# Fit small versions of both learners as an environment smoke test
-python scripts/train_final_four.py --smoke-test
-
-# Recompute validation metrics and 2,000 target-cluster bootstrap resamples
-python scripts/reproduce_metrics.py
+```text
+activity = 0.35 × XGBoost + 0.59 × LightGBM + 0.06 × MLP
 ```
 
-A complete CPU retraining is available with:
+The weights were selected from 5-fold target-grouped out-of-fold predictions on the 8,417-record training partition. Historical fixed-validation labels were not used in this weight search.
 
-```bash
-python scripts/train_final_four.py --output reproduced_run
-```
+## Performance
 
-Full retraining performs ten OOF fits plus two final fits and can take substantially longer than the acceptance tests.
+SCC/Spearman measures ordering quality; PCC/Pearson measures agreement between predicted and observed activity values. Both are primary outcomes for this release.
 
-## Data
+| Model | SCC / Spearman ↑ | PCC / Pearson ↑ | RMSE ↓ | MAE ↓ | R² ↑ |
+|---|---:|---:|---:|---:|---:|
+| XGBoost component | 0.7652 | 0.7476 | 0.4247 | 0.3312 | 0.5550 |
+| LightGBM component | 0.7690 | 0.7527 | 0.4207 | **0.3257** | 0.5635 |
+| MLP component | 0.6347 | 0.6147 | 0.5175 | 0.4099 | 0.3395 |
+| **v1.5 D ensemble** | **0.7709** | **0.7538** | **0.4205** | 0.3260 | **0.5639** |
 
-The processed V2-2 table contains 11,992 records:
+These values use the same 2,217-record historical fixed-validation split. It was examined during earlier project development and is not described as an untouched external test set. Full OOF and fixed-validation outputs, all tested weight combinations and model metadata are stored in [`results/v1_5_d_ensemble`](results/v1_5_d_ensemble).
 
-- 8,417 final training records;
-- 2,217 historical fixed-validation records;
-- 1,358 external scale-unconfirmed records, preserved for lineage but excluded from final supervised claims.
+Compared with the v1.0 XGBoost release, D is numerically higher by `+0.0027` SCC and `+0.0040` PCC and lowers RMSE by `0.0027`. Paired target-cluster bootstrap intervals cross zero for all three changes, so v1.5 is released for its reproducible combined output and consistent numerical improvement—not as proof of universal superiority.
 
-The authoritative table SHA-256 is:
+## Data and feature contract
+
+The authoritative V2-2 table contains 11,992 records: 8,417 training, 2,217 historical fixed validation and 1,358 scale-unconfirmed external records excluded from supervised performance claims. Its SHA-256 is:
 
 ```text
 39cda8368c216784507ac002df687b28a4f9cc6f81e2b0e84043e45eddb4c1c0
 ```
 
-The fixed validation set was not used to choose the final ensemble weight, but it had been examined during earlier project development. It should therefore be described as historical fixed validation, not an untouched external test set.
+The builder reconstructs 188 sequence-derived features: pair alignment, position-specific events, substitution type, sequence composition and local sequence context. Five training constants are filtered, leaving 183 ordered deployed inputs.
 
-See [Data contract and lineage](docs/DATA.md).
+## Verify the release
 
-## Repository structure
+```bash
+cas12a-ranker self-test
+python -m unittest discover -s tests -v
+python scripts/verify_repository.py
+python scripts/reproduce_metrics.py
+```
+
+Verification checks model hashes, sequence-feature reconstruction, all 2,217 frozen predictions, SCC, PCC and error metrics. See [Reproducibility](docs/REPRODUCIBILITY.md).
+
+## Repository map
 
 ```text
-Cas12a-Activity-Ranker/
-├── data/
-│   ├── raw/                 Unmodified upstream repository data files
-│   ├── processed/v2_2/      Final feature table, manifest and frozen folds
-│   ├── examples/            Example inputs and expected predictions
-│   └── metadata/            Public file checksums and data manifest
-├── src/cas12a_ml/           Feature reconstruction and inference library
-├── scripts/                 Prediction, training, verification and metrics
-├── models/                  Native XGBoost and CatBoost artifacts
-├── results/                 Frozen predictions and statistical results
-├── tests/                   Regression and integrity tests
-├── docs/                    Data, usage, results and reproducibility guides
-└── .github/                 CI and contribution templates
+data/examples/                 Minimal user input and frozen expected output
+data/processed/v2_2/           Authoritative table, feature manifest and folds
+models/primary/                Frozen v1.5 XGBoost, LightGBM and MLP artifacts
+results/v1_5_d_ensemble/       Weight grid, predictions, metrics and run manifest
+src/cas12a_ml/                 Feature, model and table I/O implementation
+scripts/                       Command wrappers and release verification
+tests/                         Input, inference, feature and integrity tests
+docs/                          Detailed use, evidence and reproducibility guides
 ```
 
 ## Limitations
 
-- The activity score is specific to the studied fluorescence assay and normalization.
-- Most validation records use guides observed in training; evidence for completely unseen guides is limited.
-- Predicted values compress the extreme activity range.
-- XGBoost and CatBoost predictions and residuals are highly correlated, limiting ensemble complementarity.
-- New assay scales, Cas12a orthologs or sequence-preparation workflows require independent calibration.
+- The activity scale is specific to the studied fluorescence assay and normalization.
+- Most validation records use guides observed in training; evidence for completely new guides is limited.
+- A within-file rank compares only the rows in that file; it is not a probability or clinical threshold.
+- New Cas12a orthologs, assay scales or sequence-preparation workflows require independent validation.
+- v1.5 requires already aligned 25-position pairs. Automatic biological alignment/mapping is outside this release.
 
-## Contributing
+## Citation and license
 
-Bug reports, documentation improvements and reproducibility fixes are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) before opening an issue or pull request. Changes to the frozen benchmark should include a clear protocol, new output paths and updated tests; do not silently overwrite the reference data or results.
+The source task and data are from Huang B, Guo L, Yin H, et al., *Deep learning enhancing guide RNA design for CRISPR/Cas12a-based diagnostics*, **iMeta** (2024), [doi:10.1002/imt2.214](https://doi.org/10.1002/imt2.214). Cite that study and the repository commit used.
 
-## Citation and data source
-
-The experimental task and source data come from the EasyDesign Cas12a-based diagnostic design study:
-
-- Huang B, Guo L, Yin H, et al. *Deep learning enhancing guide RNA design for CRISPR/Cas12a-based diagnostics*. **iMeta**. 2024;3(4):e214. [doi:10.1002/imt2.214](https://doi.org/10.1002/imt2.214)
-
-When citing this software, cite the source study and the GitHub repository URL/commit used. A repository-level `CITATION.cff` should be added once the contributor names and preferred project citation have been confirmed.
-
-## License
-
-Project-owned software is released under the [Apache License 2.0](LICENSE). The four workbooks in `data/raw/easydesign_supplementary/` are unmodified, byte-verified files from the Apache-2.0-licensed EasyDesign repository. Processed data and data-derived research artifacts are released under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) with source attribution and an explicit description of changes.
-
-See [Third-party notices and data licensing](THIRD_PARTY_NOTICES.md) for the exact file scope, upstream commit, SHA-256 values and publisher-supporting-information attribution. A project-level `CITATION.cff` remains pending until the contributor order and preferred software citation are confirmed.
+Project-owned software is licensed under [Apache License 2.0](LICENSE). Processed data and data-derived research artifacts are released under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for exact scope and provenance.

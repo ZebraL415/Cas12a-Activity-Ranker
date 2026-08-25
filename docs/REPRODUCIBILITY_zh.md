@@ -1,27 +1,23 @@
-# 可复现说明
+# 复现说明
 
-支持环境为 Python 3.12，依赖版本锁定在 `requirements.txt`。macOS 还需安装 `libomp`。
-
-验收顺序：
+v1.5 支持 Python 3.12，依赖版本冻结在 `requirements.txt`，模型文件通过 Git LFS 保存。
 
 ```bash
+git lfs pull
+python3.12 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
 pip install -r requirements.txt
 pip install --no-deps -e .
+
+cas12a-ranker self-test
 python -m unittest discover -s tests -v
 python scripts/verify_repository.py
-python scripts/train_final_four.py --verify-only
-python scripts/train_final_four.py --smoke-test
 python scripts/reproduce_metrics.py
 ```
 
-校验覆盖正式数据 SHA 和行数、188/183 特征契约、OOF 中 target 不跨 fold、外部特征精确重建、四种模型输出与全部 2,217 条冻结预测一致、五项指标复算和公开文件校验清单。
+发布验收会检查 CSV/TSV/XLSX 输入输出、行数与顺序保留、错误报告、数据哈希、188 项特征重建、183 项模型输入顺序、5 折 target 隔离、三份模型哈希、2,217 条逐样本预测、SCC/PCC/误差指标以及 0.35/0.59/0.06 的 OOF 权重最优行。
 
-完整训练命令：
+本版本可以严格复核“冻结模型如何预测、保存的指标如何得到、权重如何从 OOF 枚举中选出”。它不声称在任意操作系统重新训练都会得到逐字节相同的树和神经网络权重；跨平台数值库可能造成差异。
 
-```bash
-python scripts/train_final_four.py --output reproduced_run
-```
-
-该流程训练两个基础学习器的五折 OOF，搜索 101 组组合权重，然后拟合两个最终模型并在历史固定验证集上比较四种输出。逐样本冻结预测使他人无需先完整重训也能核验最终指标。
-
-固定验证集是历史固定验证，不是独立外部队列；加权组合增益很小且 target-cluster 区间跨 0，因此只作探索性结果。
+权重只用 8,417 条训练记录的 target-group OOF 结果选择。2,217 条固定验证记录没有参与此次选权，但在项目早期已经被查看，因此称为“历史固定验证”，不称为完全未见的外部测试集。

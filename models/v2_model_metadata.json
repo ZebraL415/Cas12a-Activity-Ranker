@@ -1,0 +1,68 @@
+{
+  "model_id": "v2_mapping_aware_dbc_system",
+  "version": "2.0.0",
+  "endpoint": "fluorescence-derived continuous Cas12a diagnostic activity",
+  "weights": {
+    "d": 0.20,
+    "b": 0.47,
+    "c": 0.33
+  },
+  "module_b_seeds": [7, 21, 42, 84, 2024],
+  "feature_count": 1191,
+  "mapping": "automatic all-candidate exact/IUPAC window search against frozen EasyDesign Table S2 templates",
+  "history_references": "guide and mapping statistics calculated from baseline_train labels only",
+  "fallback": "use sequence-only D when no template mapping candidate exists",
+  "selection_protocol": {
+    "locked_scheme": "replace historical A with manifest-safe D while retaining the pre-existing 0.20/0.47/0.33 module weights",
+    "reason": "fine and coarse D/B/C weight searches did not improve cross-fitted meta-OOF performance over the locked replacement",
+    "co_primary_metrics": ["SCC_spearman", "PCC_pearson"],
+    "validation_labels_used_to_select_v2_weights": false
+  },
+  "metrics": {
+    "crossfitted_meta_oof": {
+      "SCC_spearman": 0.8213469166,
+      "PCC_pearson": 0.8132722597,
+      "RMSE": 0.3781389689,
+      "MAE": 0.2906694776,
+      "R2": 0.6579090379
+    },
+    "historical_fixed_validation": {
+      "SCC_spearman": 0.8461558326,
+      "PCC_pearson": 0.8354807207,
+      "RMSE": 0.3522530918,
+      "MAE": 0.2707212293,
+      "R2": 0.6939600649
+    },
+    "crossfitted_delta_scc_vs_v1_system": {
+      "estimate": 0.0023575034,
+      "target_cluster_bootstrap_95_ci": [0.0010164000, 0.0036587390],
+      "draws": 2000,
+      "clusters": 6825
+    }
+  },
+  "artifact_sha256": {
+    "b_seed_7.json": "d9b91acbbe79de55e7fc75c4566334934d97c9a5bfb837c0f128f4a5e11f5202",
+    "b_seed_21.json": "083681e7ab23768f0139799229792abb3cadc51dbfce96e412842db8f96069e3",
+    "b_seed_42.json": "21a1e23c0aa364b233335fb08be79992c97f6abeb72d99bec587ffb5d7ba38c2",
+    "b_seed_84.json": "34b8016e0210c2137cd6c5ab8ac8277d048a280c9aafd3a51172df0c6cdcb040",
+    "b_seed_2024.json": "86f309fc417d7b21312bdc08bc3fbb84530dcbc0ffa85cd940ee498ecc7b2acb",
+    "c_guide_template_anchor.json": "ad3d739afc0fea061f76a63e570b2e1980b30fc00adf1bb782f58e62380cf13e",
+    "feature_manifest.csv": "f3c8960cd97540e495ae229c36392682c202a3f37c33d9e123c1359a8a5b848e",
+    "guide_history_reference.csv": "45977682553842972ac4dcc3a2e13d6726bf26b61291f0167da780e9244c0088",
+    "mapping_history_reference.csv": "58b6de12ebdc5173c0c76932128034d8c84c7a575d5a911a6d2330a4f165b7c1",
+    "table_s2_template_reference.csv": "f0237c1d0f3120de0bd5bfee4f515dd839ad79a878e8958bc6104404db1bf508"
+  },
+  "environment": {
+    "python": "3.12.13",
+    "numpy": "1.26.4",
+    "pandas": "2.2.2",
+    "scipy": "1.13.1",
+    "scikit_learn": "1.5.1",
+    "xgboost": "2.1.4",
+    "catboost": "1.2.8",
+    "lightgbm": "4.6.0",
+    "joblib": "1.4.2",
+    "openpyxl": "3.1.5"
+  },
+  "scope": "EasyDesign-compatible 25-position aligned sequence pairs; historical internal validation, not external clinical validation"
+}

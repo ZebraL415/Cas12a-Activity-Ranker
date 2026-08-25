@@ -23,4 +23,4 @@
 - [ ] 开启 Issues、Discussions（可选）和 Private vulnerability reporting。
 - [ ] 设置仓库 Description、Topics 和主页链接。
 - [ ] 保护 `main` 分支，要求 Pull Request 和 CI 通过后合并。
-- [ ] 创建 `v1.5.0` Release，并记录数据 SHA、三份模型 SHA、环境和已知限制。
+- [ ] 创建 `v2.0.0` Release，并记录数据 SHA、D/B/C 模型与参考表 SHA、环境和已知限制。

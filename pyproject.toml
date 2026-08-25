@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "cas12a-activity-ranker"
-version = "1.5.0"
+version = "2.0.0"
 description = "Reproducible toolkit for predicting continuous Cas12a diagnostic activity and ranking sequence pairs"
 readme = "README.md"
 license = { file = "LICENSE" }

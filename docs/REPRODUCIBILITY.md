@@ -2,7 +2,7 @@
 
 ## Supported environment
 
-v1.5 targets Python 3.12. Exact package versions are pinned in `requirements.txt`. Model binaries are stored with Git LFS.
+v2.0 targets Python 3.12. Exact package versions are pinned in `requirements.txt`; large model files use Git LFS.
 
 ```bash
 git lfs pull
@@ -19,28 +19,39 @@ pip install --no-deps -e .
 cas12a-ranker self-test
 python -m unittest discover -s tests -v
 python scripts/verify_repository.py
-python scripts/reproduce_metrics.py
+python scripts/reproduce_v2_metrics.py
 ```
 
-The acceptance checks cover:
+Acceptance covers:
 
-- CSV, TSV and XLSX table round trips;
-- preservation of source rows, order and columns;
-- row-level invalid-input reporting;
-- the authoritative data SHA-256 and split counts;
-- 188-feature reconstruction and 183-feature deployed order;
-- target isolation across the five frozen OOF folds;
-- hashes for all three D model artifacts;
-- all 2,217 XGBoost, LightGBM, MLP and ensemble predictions within `1e-6`;
+- CSV, TSV and XLSX round trips with row, order and source-column preservation;
+- row-level validation, forbidden manual mapping columns and explicit fallback behavior;
+- authoritative data and all deployed model/reference SHA-256 values;
+- exact automatic mapping reproduction across 10,634 train/validation rows;
+- 188 sequence-feature reconstruction, 183 D inputs and ordered 1,191 B/C inputs;
+- training-only guide/mapping history references;
+- target isolation across frozen OOF folds;
+- all 2,217 D, B, C and v2 predictions within `1e-6` of frozen values;
 - independent SCC, PCC, RMSE, MAE and R² reproduction within `1e-8`;
-- the OOF weight-grid optimum at 0.35/0.59/0.06.
+- 20,301 pooled and 101,505 cross-fitted fine-weight records and the locked 20%/47%/33% decision.
 
-## What is and is not reproducible
+## Reference construction
 
-Frozen predictions, model inference, metrics, feature reconstruction and weight selection are auditable from this release. The three deployment artifacts were exported from the frozen v1.5 training run, and their exact package environment is recorded in `models/d_model_metadata.json`.
+`scripts/build_v2_references.py` creates the deployment references from the authoritative V2-2 table and the EasyDesign combined source workbook. It enforces 8,417 `baseline_train` rows and writes:
 
-The repository does not claim that the D training run can be reconstructed from an arbitrary environment with bit-identical trees and neural-network weights. Cross-platform numerical libraries and model-library implementations may differ. The supported reproducibility claim is exact released-artifact inference plus auditable saved training/validation evidence.
+- guide sums/counts by all, exact/nonexact, difference class and gap class;
+- mapping-key sums/counts for six categorical fields;
+- 198 cleaned Table S2 templates;
+- provenance, dimensions, smoothing constants and source hashes.
+
+No fixed-validation label enters these references. `models/mapping/reference_metadata.json` records the exact canonical-table and source-workbook SHA-256 values.
+
+## What is and is not reproduced
+
+Released-artifact inference, automatic mapping, feature construction, reference lookup, per-record predictions, metrics, uncertainty and weight enumeration are auditable from the repository.
+
+The repository does not claim bit-identical retraining across arbitrary platforms. Tree and neural-network training may vary with libraries and numerical runtimes. The supported claim is exact inference from frozen artifacts plus auditable saved OOF/fixed evidence and environment pins.
 
 ## Evaluation boundary
 
-Weights were selected only from the 8,417-record training partition using five target-grouped OOF folds. The 2,217-record fixed validation was not used for this weight search, but it had been observed during earlier project development. It is therefore historical fixed validation, not an untouched external test.
+The v2 decision uses five target-grouped cross-fitted meta-OOF predictions. The 2,217-row fixed validation was not used to select the released D/B/C weights, but it had been observed earlier during project development. It is historical fixed validation, not untouched external validation. OOF grouping isolates targets rather than guides, so unseen-guide generalization remains a limitation.

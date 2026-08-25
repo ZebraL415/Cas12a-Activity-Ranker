@@ -17,12 +17,33 @@ REQUIRED_COLUMNS = ("record_id", "crRNA_sequence", "target_aligned_25")
 RESULT_COLUMNS = (
     "cas12a_activity_score",
     "cas12a_activity_rank",
+    "cas12a_rank_within_route",
     "cas12a_prediction_status",
     "cas12a_model_route",
     "cas12a_model_version",
     "cas12a_prediction_xgboost",
     "cas12a_prediction_lightgbm",
     "cas12a_prediction_mlp",
+    "cas12a_prediction_d",
+    "cas12a_prediction_b",
+    "cas12a_prediction_c",
+    "cas12a_prediction_full_dbc",
+    "cas12a_mapping_source",
+    "cas12a_mapping_status",
+    "cas12a_mapping_confidence",
+    "cas12a_mapping_hit_count",
+    "cas12a_mapping_template_count",
+    "cas12a_mapping_group_count",
+    "cas12a_mapping_orientation_count",
+    "cas12a_mapping_candidate_template_nos",
+    "cas12a_mapping_candidate_group_ids",
+    "cas12a_mapping_candidate_orientations",
+    "cas12a_mapping_match_modes",
+    "cas12a_guide_seen",
+    "cas12a_template_key_seen",
+    "cas12a_guide_reference_count",
+    "cas12a_template_reference_count",
+    "cas12a_reference_support",
     "cas12a_warning_codes",
     "prediction_xgboost_primary",
     "prediction_catboost_supporting",
@@ -34,7 +55,28 @@ TEXT_RESULT_COLUMNS = {
     "cas12a_prediction_status",
     "cas12a_model_route",
     "cas12a_model_version",
+    "cas12a_mapping_source",
+    "cas12a_mapping_status",
+    "cas12a_mapping_confidence",
+    "cas12a_mapping_candidate_template_nos",
+    "cas12a_mapping_candidate_group_ids",
+    "cas12a_mapping_candidate_orientations",
+    "cas12a_mapping_match_modes",
+    "cas12a_reference_support",
     "cas12a_warning_codes",
+}
+
+FORBIDDEN_USER_MAPPING_COLUMNS = {
+    "mapping_status",
+    "mapping_confidence",
+    "mapping_hit_count",
+    "mapping_template_count",
+    "mapping_group_count",
+    "mapping_orientation_count",
+    "mapping_candidate_template_nos",
+    "mapping_candidate_group_ids",
+    "mapping_candidate_orientations",
+    "mapping_match_modes",
 }
 
 
@@ -108,6 +150,15 @@ def validate_input(frame: pd.DataFrame) -> pd.DataFrame:
                 "error": "Input contains a reserved cas12a_ result column",
             }
         )
+    for column in sorted(FORBIDDEN_USER_MAPPING_COLUMNS & set(frame.columns)):
+        errors.append(
+            {
+                "record_id": "",
+                "source_row": 1,
+                "field": column,
+                "error": "v2 calculates mapping automatically; remove user-supplied mapping columns",
+            }
+        )
     if missing:
         return pd.DataFrame(errors)
 
@@ -153,10 +204,12 @@ def predict_file(
     output_path: str | Path | None = None,
     *,
     repository_root: str | Path | None = None,
-    primary_model: str = "d",
+    primary_model: str = "v2",
     sheet: str | int = 0,
     on_invalid: str = "error",
     overwrite_results: bool = False,
+    fallback_policy: str = "sequence",
+    allow_mixed_ranking: bool = False,
 ) -> Path:
     """Read a candidate table, append predictions, and write one output row per input row."""
     source = Path(input_path)
@@ -179,8 +232,15 @@ def predict_file(
         raise InputValidationError(error_path=error_path, error_count=len(errors))
 
     if errors.empty:
-        predictor = Cas12aPredictor(repository_root, primary_model=primary_model)
-        return write_table(predictor.predict(frame), destination)
+        predictor = Cas12aPredictor(
+            repository_root,
+            primary_model=primary_model,
+            fallback_policy=fallback_policy,
+            allow_mixed_ranking=allow_mixed_ranking,
+        )
+        prediction = predictor.predict(frame)
+        prediction = prediction.loc[:, [*frame.columns, *RESULT_COLUMNS]]
+        return write_table(prediction, destination)
 
     invalid_ids = set(errors.loc[errors["record_id"].ne(""), "record_id"].astype(str))
     valid_mask = ~frame["record_id"].astype(str).isin(invalid_ids)
@@ -188,7 +248,12 @@ def predict_file(
     for column in RESULT_COLUMNS:
         output[column] = "" if column in TEXT_RESULT_COLUMNS else np.nan
     if valid_mask.any():
-        predictor = Cas12aPredictor(repository_root, primary_model=primary_model)
+        predictor = Cas12aPredictor(
+            repository_root,
+            primary_model=primary_model,
+            fallback_policy=fallback_policy,
+            allow_mixed_ranking=allow_mixed_ranking,
+        )
         valid_predictions = predictor.predict(frame.loc[valid_mask].copy())
         for column in RESULT_COLUMNS:
             output.loc[valid_mask, column] = valid_predictions[column].to_numpy()

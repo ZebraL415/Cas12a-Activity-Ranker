@@ -75,6 +75,23 @@ class FileInterfaceTest(unittest.TestCase):
             self.assertEqual(set(output["cas12a_prediction_status"]), {"invalid_input"})
             self.assertTrue(output["cas12a_warning_codes"].notna().all())
 
+    def test_user_supplied_mapping_columns_are_rejected(self):
+        source = pd.DataFrame(
+            {
+                "record_id": ["manual_mapping"],
+                "crRNA_sequence": ["A" * 25],
+                "target_aligned_25": ["A" * 25],
+                "mapping_status": ["unique_exact_window"],
+            }
+        )
+        with tempfile.TemporaryDirectory() as temporary:
+            input_path = Path(temporary) / "manual.csv"
+            source.to_csv(input_path, index=False)
+            with self.assertRaises(InputValidationError) as context:
+                predict_file(input_path, repository_root=ROOT)
+            errors = pd.read_csv(context.exception.error_path)
+            self.assertTrue(errors["error"].str.contains("calculates mapping automatically").any())
+
 
 if __name__ == "__main__":
     unittest.main()

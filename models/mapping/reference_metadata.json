@@ -1,0 +1,15 @@
+{
+  "version": "2.0.0",
+  "reference_scope": "EasyDesign baseline_train only",
+  "train_rows": 8417,
+  "unique_guides": 1341,
+  "global_train_label_mean": -2.7065002572175363,
+  "guide_smoothing": 0.5,
+  "mapping_smoothing": 20.0,
+  "template_rows": 198,
+  "canonical_table_sha256": "39cda8368c216784507ac002df687b28a4f9cc6f81e2b0e84043e45eddb4c1c0",
+  "source_workbook_sha256": "3edd9372ccfbca56aba22dae8687898ba482d1654ae07196d07b99cb6deeb27e",
+  "guide_reference_rows": 8132,
+  "mapping_reference_rows": 528,
+  "leakage_control": "No baseline_validation labels are present in either history reference."
+}

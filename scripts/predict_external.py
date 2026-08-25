@@ -18,8 +18,10 @@ def main() -> None:
     parser.add_argument("--input", type=Path, required=True)
     parser.add_argument("--output", type=Path)
     parser.add_argument("--sheet", default=0)
-    parser.add_argument("--model", choices=["d", "xgboost-legacy"], default="d")
+    parser.add_argument("--model", choices=["v2", "d", "xgboost-legacy"], default="v2")
     parser.add_argument("--on-invalid", choices=["error", "keep"], default="error")
+    parser.add_argument("--fallback-policy", choices=["sequence", "error"], default="sequence")
+    parser.add_argument("--allow-mixed-ranking", action="store_true")
     parser.add_argument("--overwrite-results", action="store_true")
     args = parser.parse_args()
     sheet = int(args.sheet) if str(args.sheet).isdigit() else args.sheet
@@ -31,6 +33,8 @@ def main() -> None:
         sheet=sheet,
         on_invalid=args.on_invalid,
         overwrite_results=args.overwrite_results,
+        fallback_policy=args.fallback_policy,
+        allow_mixed_ranking=args.allow_mixed_ranking,
     )
     print(f"Predicted {len(read_table(destination))} sequence pairs -> {destination.resolve()}")
 

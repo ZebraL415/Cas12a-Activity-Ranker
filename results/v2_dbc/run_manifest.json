@@ -1,0 +1,55 @@
+{
+  "release": "2.0.0",
+  "model": "mapping-aware D+B+C",
+  "input_contract": {
+    "required_columns": ["record_id", "crRNA_sequence", "target_aligned_25"],
+    "sequence_length": 25,
+    "alignment_required_from_user": true,
+    "mapping_calculated_automatically": true,
+    "user_mapping_columns_accepted": false
+  },
+  "data": {
+    "canonical_table": "data/processed/v2_2/EasyDesign_2024_V2-2_core_context_feature_table.csv",
+    "sha256": "39cda8368c216784507ac002df687b28a4f9cc6f81e2b0e84043e45eddb4c1c0",
+    "train_rows": 8417,
+    "historical_fixed_validation_rows": 2217,
+    "target_group_oof_folds": 5,
+    "validation_target_clusters": 1796
+  },
+  "modules": {
+    "d": "0.35 XGBoost + 0.59 LightGBM + 0.06 MLP on 183 sequence features",
+    "b": "mean of five guide-anchored mapping-aware XGBoost residual models",
+    "c": "guide-template mean anchor plus mapping-aware XGBoost residual model"
+  },
+  "released_weights": {"d": 0.20, "b": 0.47, "c": 0.33},
+  "weight_evidence": {
+    "coarse_pooled_combinations": 5151,
+    "fine_pooled_combinations": 20301,
+    "fine_crossfitted_combinations": 101505,
+    "fine_pooled_optimum": {"d": 0.225, "b": 0.47, "c": 0.305},
+    "decision": "retain locked 0.20/0.47/0.33 because cross-fitted reweighting underperformed",
+    "fixed_validation_used_for_selection": false
+  },
+  "references": {
+    "templates": 198,
+    "guide_history_scope": "baseline_train only",
+    "mapping_history_scope": "baseline_train only",
+    "global_train_label_mean": -2.7065002572175363,
+    "guide_smoothing": 0.5,
+    "mapping_smoothing": 20.0
+  },
+  "outputs": {
+    "meta_oof_predictions": "results/v2_dbc/meta_oof_predictions.csv",
+    "fixed_predictions": "results/v2_dbc/fixed_validation_predictions.csv",
+    "recomputed_metrics": "results/v2_dbc/recomputed_metrics.csv",
+    "paired_bootstrap": "results/v2_dbc/v2_vs_v1_target_cluster_bootstrap.csv",
+    "weight_audit": "results/v2_dbc/weight_audit/"
+  },
+  "acceptance": {
+    "mapping_regression_rows": 10634,
+    "prediction_regression_rows": 2217,
+    "maximum_allowed_prediction_difference": 0.000001,
+    "metric_tolerance": 0.00000001
+  },
+  "scope": "EasyDesign-compatible aligned pairs; historical internal validation, not external clinical validation"
+}

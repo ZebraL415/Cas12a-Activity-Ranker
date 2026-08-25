@@ -1,0 +1,198 @@
+{
+  "grid": {
+    "step": 0.005,
+    "constraints": "D, B, C weights are nonnegative and sum to one",
+    "combinations": 20301
+  },
+  "locked_weights": {
+    "D": 0.2,
+    "B": 0.47,
+    "C": 0.33
+  },
+  "pooled_oof_mathematical_optimum": {
+    "D": 0.225,
+    "B": 0.47,
+    "C": 0.305,
+    "spearman": 0.8214589217681375
+  },
+  "near_optimal_region": {
+    "within_0.00001": {
+      "combinations": 22,
+      "d_range": [
+        0.22,
+        0.235
+      ],
+      "b_range": [
+        0.44,
+        0.49
+      ],
+      "c_range": [
+        0.275,
+        0.34
+      ]
+    },
+    "within_0.00010": {
+      "combinations": 423,
+      "d_range": [
+        0.195,
+        0.25
+      ],
+      "b_range": [
+        0.37,
+        0.6
+      ],
+      "c_range": [
+        0.175,
+        0.41
+      ]
+    },
+    "within_0.00050": {
+      "combinations": 2007,
+      "d_range": [
+        0.16,
+        0.29
+      ],
+      "b_range": [
+        0.24,
+        0.715
+      ],
+      "c_range": [
+        0.055,
+        0.545
+      ]
+    },
+    "within_0.00100": {
+      "combinations": 3936,
+      "d_range": [
+        0.13,
+        0.315
+      ],
+      "b_range": [
+        0.135,
+        0.805
+      ],
+      "c_range": [
+        0.0,
+        0.65
+      ]
+    }
+  },
+  "crossfitted_selected_weights": [
+    {
+      "fold": 0,
+      "d_weight": 0.22,
+      "b_weight": 0.575,
+      "c_weight": 0.205,
+      "selection_spearman_on_other_four_folds": 0.8246565581725169
+    },
+    {
+      "fold": 1,
+      "d_weight": 0.24,
+      "b_weight": 0.415,
+      "c_weight": 0.345,
+      "selection_spearman_on_other_four_folds": 0.8200731562413444
+    },
+    {
+      "fold": 2,
+      "d_weight": 0.25,
+      "b_weight": 0.425,
+      "c_weight": 0.325,
+      "selection_spearman_on_other_four_folds": 0.8172129696791623
+    },
+    {
+      "fold": 3,
+      "d_weight": 0.205,
+      "b_weight": 0.43,
+      "c_weight": 0.365,
+      "selection_spearman_on_other_four_folds": 0.8189885104453012
+    },
+    {
+      "fold": 4,
+      "d_weight": 0.22,
+      "b_weight": 0.6,
+      "c_weight": 0.18,
+      "selection_spearman_on_other_four_folds": 0.8266406045594332
+    }
+  ],
+  "metrics": [
+    {
+      "protocol": "crossfitted_meta_oof",
+      "scheme": "Current A/B/C",
+      "spearman": 0.8189894132671622,
+      "pearson": 0.8119023047221939,
+      "rmse": 0.37825377052943093,
+      "mae": 0.28885794408491144,
+      "r2": 0.6577012911488985
+    },
+    {
+      "protocol": "crossfitted_meta_oof",
+      "scheme": "D replaces A\n20/47/33",
+      "spearman": 0.8213469166323685,
+      "pearson": 0.8132722597385789,
+      "rmse": 0.378138968874553,
+      "mae": 0.2906694775793089,
+      "r2": 0.6579090378944825
+    },
+    {
+      "protocol": "crossfitted_meta_oof",
+      "scheme": "Fine reweight\ncross-fitted",
+      "spearman": 0.820690924671601,
+      "pearson": 0.8124624891872887,
+      "rmse": 0.3791147754801149,
+      "mae": 0.29166510260810663,
+      "r2": 0.6561411940024903
+    },
+    {
+      "protocol": "historical_fixed_validation",
+      "scheme": "Current A/B/C",
+      "spearman": 0.8423697331753861,
+      "pearson": 0.8324788353087487,
+      "rmse": 0.35355729350487786,
+      "mae": 0.2691657219457176,
+      "r2": 0.6916896707245986
+    },
+    {
+      "protocol": "historical_fixed_validation",
+      "scheme": "D replaces A\n20/47/33",
+      "spearman": 0.8461558326118818,
+      "pearson": 0.8354807207247226,
+      "rmse": 0.35225309183393855,
+      "mae": 0.27072122932068565,
+      "r2": 0.693960064933054
+    },
+    {
+      "protocol": "historical_fixed_validation",
+      "scheme": "Fine reweight\ncross-fitted",
+      "spearman": 0.8460713736205452,
+      "pearson": 0.8354321958599326,
+      "rmse": 0.3526134162270939,
+      "mae": 0.27144904513596824,
+      "r2": 0.6933336400321016
+    }
+  ],
+  "bootstrap": {
+    "oof_fine_minus_locked_replacement": {
+      "comparison": "fine_reweight_crossfitted minus replace_a_fixed",
+      "clusters": 6825,
+      "draws": 2000,
+      "observed_delta": -0.000655991960767488,
+      "bootstrap_mean": -0.0006533440486977404,
+      "ci95_low": -0.0010115042334447016,
+      "ci95_high": -0.00032439720092013185
+    },
+    "fixed_fine_minus_locked_replacement": {
+      "comparison": "fine_reweight_crossfitted minus replace_a_fixed",
+      "clusters": 1796,
+      "draws": 2000,
+      "observed_delta": -8.445899133657786e-05,
+      "bootstrap_mean": -8.68885099980497e-05,
+      "ci95_low": -0.0005994750139278471,
+      "ci95_high": 0.0004801090323688571
+    }
+  },
+  "decision": {
+    "keep_locked_20_47_33": true,
+    "reason": "the fine pooled optimum is not a stable generalization improvement; cross-fitted reweighting does not beat the locked 20/47/33 replacement",
+    "fixed_validation_used_for_weight_selection": false
+  }
+}

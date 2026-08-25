@@ -2,7 +2,7 @@ name: test
 
 on:
   push:
-    branches: [main, "codex/v1.5-d-ensemble"]
+    branches: [main, "codex/v1.5-d-ensemble", "codex/v2-dbc-system"]
   pull_request:
   workflow_dispatch:
 
@@ -49,3 +49,6 @@ jobs:
 
       - name: Recompute v1.5 metrics without bootstrap latency
         run: python scripts/reproduce_metrics.py --bootstrap 20
+
+      - name: Recompute v2 metrics without bootstrap latency
+        run: python scripts/reproduce_v2_metrics.py --bootstrap 20

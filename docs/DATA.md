@@ -42,17 +42,17 @@ The processed directory also contains the feature dictionary, the exact manifest
 | Sequence context | 58 | Guide/target GC windows and selected k-mer frequencies |
 | **Total** | **188** | Candidate model inputs |
 
-Five columns are constant in the training partition and are removed, leaving 183 active deployed inputs. IDs, labels, split fields and source mapping metadata are not model features.
+Five columns are constant in the training partition and are removed, leaving 183 active inputs for D. IDs, labels and split fields are never model features. v2 modules B/C extend D with training-only guide encodings, pair identities, mapping counts, mapping encodings and mapping one-hot fields, producing a frozen 1,191-column matrix.
 
 ## Sequence representation
 
 Each model input represents 25 aligned guide–target positions. In this project's data representation, positions 1–4 contain the PAM block and positions 5–25 contain the spacer block.
 
-A gap (`-`) is an alignment gap/bulge, not a frameshift. The repository accepts an already aligned 25-position target and preserves gap events as separate features. It intentionally does not infer an alignment from a variable-length external sequence.
+A gap (`-`) is an alignment gap/bulge, not a frameshift. The repository accepts an already aligned 25-position target and preserves gap events as separate features. It does not infer an alignment from a variable-length external sequence. v2 automatically maps the supplied aligned target against its frozen EasyDesign Table S2 template reference; mapping is distinct from alignment.
 
 ## Validation protocol
 
-Five OOF folds are frozen by target sequence. A target never occurs in more than one training fold. The historical fixed validation set contains 1,796 distinct target sequences and is not used to select the final 59/41 ensemble weight.
+Five OOF folds are frozen by target sequence. A target never occurs in more than one training fold. The historical fixed validation set contains 1,796 distinct target sequences. Its labels were not used to choose the released v2 D/B/C weights; guide and mapping deployment histories are also generated from baseline training rows only.
 
 Because that validation set was inspected during earlier model development, it is not described as an untouched test set. Broad claims should be reserved for a future independently collected assay cohort.
 

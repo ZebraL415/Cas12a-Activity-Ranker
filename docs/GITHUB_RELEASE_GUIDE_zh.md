@@ -30,8 +30,8 @@ cd /path/to/Cas12a-Activity-Ranker
 python scripts/generate_sha256_manifest.py
 python -m unittest discover -s tests -v
 python scripts/verify_repository.py
-python scripts/train_final_four.py --verify-only
-python scripts/train_final_four.py --smoke-test
+cas12a-ranker self-test
+python scripts/reproduce_v2_metrics.py
 ```
 
 检查不会上传内部归档：
@@ -58,7 +58,7 @@ git lfs install
 git add .
 git lfs ls-files
 git status --short
-git commit -m "Release Cas12a Activity Ranker v1.0.0"
+git commit -m "Release Cas12a Activity Ranker v2.0.0"
 git remote add origin https://github.com/ZebraL415/Cas12a-Activity-Ranker.git
 git push -u origin main
 ```
@@ -73,23 +73,24 @@ git remote add origin git@github.com:ZebraL415/Cas12a-Activity-Ranker.git
 
 ## 6. 推送后的 GitHub 设置
 
-- Description：`Machine-learning toolkit for ranking Cas12a crRNA–target pairs by fluorescence-derived diagnostic activity.`
-- Topics：`cas12a`, `crispr-diagnostics`, `machine-learning`, `bioinformatics`, `xgboost`, `catboost`, `crrna-design`, `reproducible-research`
+- Description：`Predict continuous Cas12a diagnostic activity and rank aligned crRNA-target pairs from tables.`
+- Topics：`cas12a`, `crispr-diagnostics`, `machine-learning`, `bioinformatics`, `xgboost`, `lightgbm`, `crrna-design`, `reproducible-research`
 - 开启 Issues 和 Private vulnerability reporting；Discussions 可选。
 - 在 Branch protection 中要求 `main` 通过 Pull Request 和 `test` CI 后才能合并。
 - 检查 Actions 页面，确认第一次 `test` 工作流为绿色。
 
-## 7. 创建 v1.0.0 Release
+## 7. 创建 v2.0.0 Release
 
 ```bash
-git tag -a v1.0.0 -m "Cas12a Activity Ranker v1.0.0"
-git push origin v1.0.0
+git tag -a v2.0.0 -m "Cas12a Activity Ranker v2.0.0"
+git push origin v2.0.0
 ```
 
 在 GitHub Releases 中用该 tag 创建 Release，说明：
 
 - 正式数据 SHA-256；
-- XGBoost 主模型和 CatBoost 配套模型版本；
-- 加权组合是探索性结果；
+- D/B/C 模型、198 条 mapping template、训练集历史参考表、20/47/33 权重和环境版本；
+- CSV/TSV/XLSX 最小示例与 `cas12a-ranker self-test`；
+- SCC 与 PCC 同为主要结果；
 - 固定验证集不是 untouched external test；
-- 已知的 unseen-guide 和量纲外推限制。
+- 自动 mapping、unmapped 回退、unseen-guide/template 和量纲外推限制。

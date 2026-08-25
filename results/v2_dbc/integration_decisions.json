@@ -1,0 +1,226 @@
+{
+  "teammate_exact": {
+    "candidate_internal_weights_selected_on_all_oof": {
+      "xgb": 0.26,
+      "lightgbm": 0.69,
+      "mlp": 0.050000000000000044
+    },
+    "fixed_application_weights": {
+      "add_fourth_candidate_weight": 0.23,
+      "augment_a_candidate_weight": 0.495,
+      "reweight_dbc": {
+        "d": 0.29,
+        "b": 0.45,
+        "c": 0.26
+      }
+    },
+    "crossfitted_fold_choices": [
+      {
+        "fold": 0,
+        "internal_weights": {
+          "xgb": 0.3,
+          "lightgbm": 0.65,
+          "mlp": 0.04999999999999993
+        },
+        "add_fourth_candidate_weight": 0.195,
+        "augment_a_candidate_weight": 0.495,
+        "reweight_dbc": {
+          "d": 0.29,
+          "b": 0.52,
+          "c": 0.19
+        }
+      },
+      {
+        "fold": 1,
+        "internal_weights": {
+          "xgb": 0.25,
+          "lightgbm": 0.7,
+          "mlp": 0.050000000000000044
+        },
+        "add_fourth_candidate_weight": 0.24,
+        "augment_a_candidate_weight": 0.47000000000000003,
+        "reweight_dbc": {
+          "d": 0.31,
+          "b": 0.41,
+          "c": 0.28
+        }
+      },
+      {
+        "fold": 2,
+        "internal_weights": {
+          "xgb": 0.3,
+          "lightgbm": 0.64,
+          "mlp": 0.05999999999999994
+        },
+        "add_fourth_candidate_weight": 0.27,
+        "augment_a_candidate_weight": 0.545,
+        "reweight_dbc": {
+          "d": 0.32,
+          "b": 0.47,
+          "c": 0.21
+        }
+      },
+      {
+        "fold": 3,
+        "internal_weights": {
+          "xgb": 0.27,
+          "lightgbm": 0.67,
+          "mlp": 0.05999999999999994
+        },
+        "add_fourth_candidate_weight": 0.195,
+        "augment_a_candidate_weight": 0.49,
+        "reweight_dbc": {
+          "d": 0.28,
+          "b": 0.43,
+          "c": 0.29
+        }
+      },
+      {
+        "fold": 4,
+        "internal_weights": {
+          "xgb": 0.19,
+          "lightgbm": 0.78,
+          "mlp": 0.030000000000000027
+        },
+        "add_fourth_candidate_weight": 0.185,
+        "augment_a_candidate_weight": 0.495,
+        "reweight_dbc": {
+          "d": 0.28,
+          "b": 0.55,
+          "c": 0.17
+        }
+      }
+    ],
+    "best_nonbaseline_scheme_by_crossfitted_meta_oof": "reweight_dbc",
+    "oof_bootstrap_vs_current": {
+      "draws": 2000,
+      "clusters": 6825,
+      "delta_spearman": 0.0034923896119911646,
+      "bootstrap_mean": 0.0034978508036805434,
+      "ci95_low": 0.0014293834106568315,
+      "ci95_high": 0.005613807139406419
+    },
+    "fixed_bootstrap_vs_current": {
+      "draws": 2000,
+      "clusters": 1796,
+      "delta_spearman": 0.004982961554256815,
+      "bootstrap_mean": 0.004925367161794283,
+      "ci95_low": 0.0008761778720946523,
+      "ci95_high": 0.00946543578189361
+    },
+    "promotion_rule": "promote only if crossfitted meta-OOF gain is positive and its target-cluster bootstrap CI excludes zero",
+    "promote": true
+  },
+  "manifest_safe": {
+    "candidate_internal_weights_selected_on_all_oof": {
+      "xgb": 0.35,
+      "lightgbm": 0.59,
+      "mlp": 0.06000000000000005
+    },
+    "fixed_application_weights": {
+      "add_fourth_candidate_weight": 0.15,
+      "augment_a_candidate_weight": 0.23,
+      "reweight_dbc": {
+        "d": 0.23,
+        "b": 0.47,
+        "c": 0.3
+      }
+    },
+    "crossfitted_fold_choices": [
+      {
+        "fold": 0,
+        "internal_weights": {
+          "xgb": 0.46,
+          "lightgbm": 0.5,
+          "mlp": 0.040000000000000036
+        },
+        "add_fourth_candidate_weight": 0.12,
+        "augment_a_candidate_weight": 0.21,
+        "reweight_dbc": {
+          "d": 0.22,
+          "b": 0.57,
+          "c": 0.21
+        }
+      },
+      {
+        "fold": 1,
+        "internal_weights": {
+          "xgb": 0.35,
+          "lightgbm": 0.59,
+          "mlp": 0.06000000000000005
+        },
+        "add_fourth_candidate_weight": 0.17,
+        "augment_a_candidate_weight": 0.185,
+        "reweight_dbc": {
+          "d": 0.24,
+          "b": 0.41,
+          "c": 0.35
+        }
+      },
+      {
+        "fold": 2,
+        "internal_weights": {
+          "xgb": 0.36,
+          "lightgbm": 0.57,
+          "mlp": 0.07000000000000006
+        },
+        "add_fourth_candidate_weight": 0.165,
+        "augment_a_candidate_weight": 0.26,
+        "reweight_dbc": {
+          "d": 0.25,
+          "b": 0.43,
+          "c": 0.32
+        }
+      },
+      {
+        "fold": 3,
+        "internal_weights": {
+          "xgb": 0.45,
+          "lightgbm": 0.51,
+          "mlp": 0.040000000000000036
+        },
+        "add_fourth_candidate_weight": 0.12,
+        "augment_a_candidate_weight": 0.215,
+        "reweight_dbc": {
+          "d": 0.2,
+          "b": 0.44,
+          "c": 0.36
+        }
+      },
+      {
+        "fold": 4,
+        "internal_weights": {
+          "xgb": 0.4,
+          "lightgbm": 0.53,
+          "mlp": 0.06999999999999995
+        },
+        "add_fourth_candidate_weight": 0.105,
+        "augment_a_candidate_weight": 0.225,
+        "reweight_dbc": {
+          "d": 0.22,
+          "b": 0.6,
+          "c": 0.18
+        }
+      }
+    ],
+    "best_nonbaseline_scheme_by_crossfitted_meta_oof": "replace_a_fixed",
+    "oof_bootstrap_vs_current": {
+      "draws": 2000,
+      "clusters": 6825,
+      "delta_spearman": 0.002357503365206237,
+      "bootstrap_mean": 0.0023496958005519374,
+      "ci95_low": 0.0010163999618965718,
+      "ci95_high": 0.003658738992094831
+    },
+    "fixed_bootstrap_vs_current": {
+      "draws": 2000,
+      "clusters": 1796,
+      "delta_spearman": 0.00378609943649566,
+      "bootstrap_mean": 0.0037602148000810036,
+      "ci95_low": 0.0010488530664617968,
+      "ci95_high": 0.006852663041849734
+    },
+    "promotion_rule": "promote only if crossfitted meta-OOF gain is positive and its target-cluster bootstrap CI excludes zero",
+    "promote": true
+  }
+}

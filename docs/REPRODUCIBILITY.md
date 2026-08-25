@@ -1,40 +1,57 @@
 # Reproducibility
 
-## Frozen environment
+## Supported environment
 
-The supported environment is Python 3.12 with versions pinned in `requirements.txt`. On macOS, XGBoost also needs `libomp`.
-
-## Acceptance sequence
+v2.0 targets Python 3.12. Exact package versions are pinned in `requirements.txt`; large model files use Git LFS.
 
 ```bash
+git lfs pull
+python3.12 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
 pip install -r requirements.txt
+pip install --no-deps -e .
+```
+
+## Release acceptance sequence
+
+```bash
+cas12a-ranker self-test
 python -m unittest discover -s tests -v
 python scripts/verify_repository.py
-python scripts/train_final_four.py --verify-only
-python scripts/train_final_four.py --smoke-test
-python scripts/reproduce_metrics.py
+python scripts/reproduce_v2_metrics.py
 ```
 
-The verification script checks:
+Acceptance covers:
 
-- the formal V2-2 SHA-256 and record counts;
-- 188-feature manifest and 183 active deployed inputs;
+- CSV, TSV and XLSX round trips with row, order and source-column preservation;
+- row-level validation, forbidden manual mapping columns and explicit fallback behavior;
+- authoritative data and all deployed model/reference SHA-256 values;
+- exact automatic mapping reproduction across 10,634 train/validation rows;
+- 188 sequence-feature reconstruction, 183 D inputs and ordered 1,191 B/C inputs;
+- training-only guide/mapping history references;
 - target isolation across frozen OOF folds;
-- exact reconstruction of stored features;
-- native-model predictions against all 2,217 frozen validation outputs;
-- independently recomputed performance metrics;
-- every file listed in the public checksum manifest.
+- all 2,217 D, B, C and v2 predictions within `1e-6` of frozen values;
+- independent SCC, PCC, RMSE, MAE and R² reproduction within `1e-8`;
+- 20,301 pooled and 101,505 cross-fitted fine-weight records and the locked 20%/47%/33% decision.
 
-## Full training
+## Reference construction
 
-```bash
-python scripts/train_final_four.py --output reproduced_run
-```
+`scripts/build_v2_references.py` creates the deployment references from the authoritative V2-2 table and the EasyDesign combined source workbook. It enforces 8,417 `baseline_train` rows and writes:
 
-The full run trains XGBoost and CatBoost in five target-grouped OOF folds, searches 101 ensemble weights on OOF predictions, then trains both final models and evaluates four outputs on the historical fixed validation set.
+- guide sums/counts by all, exact/nonexact, difference class and gap class;
+- mapping-key sums/counts for six categorical fields;
+- 198 cleaned Table S2 templates;
+- provenance, dimensions, smoothing constants and source hashes.
 
-## Evidence boundary
+No fixed-validation label enters these references. `models/mapping/reference_metadata.json` records the exact canonical-table and source-workbook SHA-256 values.
 
-The frozen per-record predictions make the reported metrics auditable without retraining. Full model-training reproducibility still depends on the pinned software environment, operating system numerical libraries and CPU implementation. Small floating-point differences may occur across platforms; model rankings and metrics should be compared with explicit tolerances.
+## What is and is not reproduced
 
-The validation split is historical fixed validation, not an untouched external cohort. The OOF-weighted ensemble is reported as exploratory because its ranking gain is small and its target-cluster interval crosses zero.
+Released-artifact inference, automatic mapping, feature construction, reference lookup, per-record predictions, metrics, uncertainty and weight enumeration are auditable from the repository.
+
+The repository does not claim bit-identical retraining across arbitrary platforms. Tree and neural-network training may vary with libraries and numerical runtimes. The supported claim is exact inference from frozen artifacts plus auditable saved OOF/fixed evidence and environment pins.
+
+## Evaluation boundary
+
+The v2 decision uses five target-grouped cross-fitted meta-OOF predictions. The 2,217-row fixed validation was not used to select the released D/B/C weights, but it had been observed earlier during project development. It is historical fixed validation, not untouched external validation. OOF grouping isolates targets rather than guides, so unseen-guide generalization remains a limitation.

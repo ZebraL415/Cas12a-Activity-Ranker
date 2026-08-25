@@ -1,0 +1,55 @@
+{
+  "model_id": "D_sequence_heterogeneous_ensemble",
+  "version": "1.5.0",
+  "endpoint": "fluorescence-derived continuous Cas12a diagnostic activity",
+  "feature_source": "models/model_input_metadata.json::active_features",
+  "manifest_features": 188,
+  "active_features": 183,
+  "weights": {
+    "xgboost": 0.35,
+    "lightgbm": 0.59,
+    "mlp": 0.06
+  },
+  "selection_protocol": "weights selected from five frozen target-group OOF predictions; historical fixed-validation labels were not used",
+  "metrics": {
+    "target_group_oof": {
+      "SCC_spearman": 0.7409809403304154,
+      "PCC_pearson": 0.7179194264131751,
+      "RMSE": 0.45073459758509354,
+      "MAE": 0.3470702277495846,
+      "R2": 0.5139504792147329
+    },
+    "historical_fixed_validation": {
+      "SCC_spearman": 0.7709418405865481,
+      "PCC_pearson": 0.7537795124035377,
+      "RMSE": 0.4204865852942966,
+      "MAE": 0.32604111754079396,
+      "R2": 0.5639133779010039
+    }
+  },
+  "artifacts": {
+    "xgboost": {
+      "path": "models/primary/d_xgboost.json",
+      "sha256": "cbd7d6f8e0fc6223c8e46fdad0635567056d04d92e92d8334ebb5b84f1b36d3b"
+    },
+    "lightgbm": {
+      "path": "models/primary/d_lightgbm.txt",
+      "sha256": "fe68bbca8631a3cda084b35c78a48e9a399de3bd3b3ad0841c3873b0170d2602"
+    },
+    "mlp_pipeline": {
+      "path": "models/primary/d_mlp_pipeline.joblib",
+      "sha256": "5b2f5bde6d8b08b05b3d298b64312961c1482456a2c27e3c3e59440675f753a6"
+    }
+  },
+  "environment": {
+    "python": "3.12.13",
+    "numpy": "1.26.4",
+    "pandas": "2.2.2",
+    "scipy": "1.13.1",
+    "scikit_learn": "1.5.1",
+    "xgboost": "2.1.4",
+    "lightgbm": "4.6.0",
+    "joblib": "1.4.2"
+  },
+  "scope": "sequence-only v1.5 model for EasyDesign-compatible 25-position aligned pairs; not an external clinical validation claim"
+}

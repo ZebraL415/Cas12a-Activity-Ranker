@@ -1,133 +1,141 @@
 # Cas12a Activity Ranker
 
-**根据 Cas12a crRNA–target 序列对预测荧光诊断反应活性，并对实验候选进行优先级排序的可复现机器学习工具。**
+**读取 CSV、TSV 或 XLSX 中已经对齐的 crRNA–target 序列对，逐行预测 Cas12a 荧光来源的连续活性值，并给候选排序。**
 
-[English README](README.md) · [使用指南](docs/USAGE_zh.md) · [数据说明](docs/DATA_zh.md) · [模型卡](models/MODEL_CARD_zh.md) · [完整结果](docs/RESULTS_zh.md) · [许可证](LICENSE)
+[English](README.md) · [详细使用](docs/USAGE_zh.md) · [模型卡](models/MODEL_CARD_zh.md) · [结果解释](docs/RESULTS_zh.md) · [复现说明](docs/REPRODUCIBILITY_zh.md)
 
-## 项目解决什么问题？
+> 这是面向所研究 Cas12a 分子检测实验的科研工具，不预测基因编辑效率、患者诊断或临床准确率。
 
-一个目标序列往往可以设计出许多候选 crRNA，但逐个做荧光实验耗时且成本高。本项目学习已有 Cas12a 荧光反应结果，为每一组 crRNA–target 配对预测连续活性分数，帮助实验人员优先验证更有希望的候选。
+## 四步开始使用
 
-本仓库包含正式数据、精确特征重建、可直接调用的原生模型、命令行预测、冻结逐样本结果、统计不确定性分析和完整测试。
+### 1. 安装
 
-> 本项目预测的是 Cas12a 分子检测体系中的荧光反应活性，不是基因编辑效率、患者诊断结果或临床准确率。
-
-## 工作流程
-
-```mermaid
-flowchart LR
-    A["crRNA 序列"] --> C["25 位 guide–target 配对"]
-    B["已对齐 target 序列"] --> C
-    C --> D["188 项序列特征"]
-    D --> E["XGBoost 正式主模型"]
-    D -. 参考 .-> F["CatBoost 配套模型"]
-    E --> G["预测活性分数"]
-    F -. 敏感性分析 .-> G
-    G --> H["候选实验优先级"]
-```
-
-188 项候选特征包括：11 项配对总体特征、75 项逐位置事件、12 项替换类型、32 项序列组成和 58 项序列上下文。训练中有 5 项为常量，实际部署使用 183 项有序输入。
-
-## 最终表现
-
-| 模型 | Spearman ↑ | RMSE ↓ | MAE ↓ | R² ↑ | 定位 |
-|---|---:|---:|---:|---:|---|
-| **XGBoost** | 0.7682 | **0.4231** | **0.3279** | **0.5584** | **正式主模型** |
-| CatBoost | 0.7582 | 0.4330 | 0.3396 | 0.5376 | 配套模型 |
-| 50/50 等权组合 | 0.7688 | 0.4249 | 0.3308 | 0.5547 | 敏感性分析 |
-| OOF 59/41 加权 | **0.7693** | 0.4241 | 0.3298 | 0.5563 | 探索性比较 |
-
-加权组合的 Spearman 数值最高，但只比 XGBoost 高 `0.0011`，target-cluster bootstrap 95% 区间为 `[-0.0020, 0.0043]`，不足以证明稳定提升。因此 XGBoost 仍是正式主模型。
-
-## 安装
+需要 Python 3.12 和 Git LFS。
 
 ```bash
 git clone https://github.com/ZebraL415/Cas12a-Activity-Ranker.git
 cd Cas12a-Activity-Ranker
-
+git lfs pull
 python3.12 -m venv .venv
-source .venv/bin/activate       # Windows: .venv\Scripts\activate
+source .venv/bin/activate
 python -m pip install --upgrade pip
 pip install -r requirements.txt
 pip install --no-deps -e .
 ```
 
-macOS 还需安装 XGBoost 使用的 OpenMP：
+### 2. 先跑自检
 
 ```bash
-brew install libomp
+cas12a-ranker self-test
 ```
 
-## 快速预测
+自检会真实运行 5 行示例，覆盖完全匹配、错配、gap、多候选 mapping 和无法 mapping 后回退。
 
-输入 CSV 每行代表一组候选，至少包含：
+### 3. 准备输入表
 
-- `crRNA_sequence`：恰好 25 位，允许 A/C/G/T；U 会自动转成 T。
-- `target_aligned_25`：恰好 25 个已对齐位置，允许 A/C/G/T 和 `-`。
-- 无 gap 时可以用 `target_sequence` 替代 `target_aligned_25`。
+每行是一对**已经对齐**的序列，只要求三列：
 
-运行仓库示例：
+| 列名 | 规则 |
+|---|---|
+| `record_id` | 文件内非空且唯一 |
+| `crRNA_sequence` | 恰好 25 位，只含 A/C/G/T；U 会转为 T |
+| `target_aligned_25` | 恰好 25 个对齐位置，可含 `-` gap |
 
-```bash
-python scripts/predict_external.py \
-  --input data/examples/external_sequence_pairs.csv \
-  --output predictions.csv
+```csv
+record_id,crRNA_sequence,target_aligned_25,sample_note
+candidate_01,TTTGTTGGGGCGTCCTTAGACGCCA,TTTGTTGGGGCGTCCTTAGACGCCA,exact pair
+candidate_02,TTTGGGCTAGGTGTGATAGGAATGG,TTTGGGCTAGGAGTGATAGGAATGG,one mismatch
 ```
 
-正式结果列为 `prediction_xgboost_primary`，分数越大，排序越靠前。含 gap 的 target 必须事先完成对齐；程序不会自行猜测 alignment。
+其他用户列和原始行顺序会原样保留。v2.0 不接收用户计算的 mapping 列，程序会根据 `target_aligned_25` 自动完成 mapping。
 
-## 验证与复现
+### 4. 预测
 
 ```bash
-python scripts/verify_repository.py
+cas12a-ranker predict --input candidates.csv --output predictions.csv
+```
+
+结果表在原列后追加：
+
+| 主要输出 | 含义 |
+|---|---|
+| `cas12a_activity_score` | 该行最终采用的连续活性预测 |
+| `cas12a_activity_rank` | 同一可比路线下的全表降序名次 |
+| `cas12a_rank_within_route` | 只在相同模型路线内部比较的名次 |
+| `cas12a_prediction_d/b/c` | 三个模块的可审计预测 |
+| `cas12a_prediction_full_dbc` | mapping 成功时的 `20% D + 47% B + 33% C` |
+| `cas12a_model_route` | 完整 v2 或明确的 D 回退路线 |
+| `cas12a_mapping_*` | 自动 mapping 状态及全部候选 |
+| `cas12a_guide_seen` / `cas12a_template_key_seen` | 训练历史是否含这个键 |
+| `cas12a_warning_codes` | 该行需要注意的机器可读提示 |
+
+## v2.0 实际做了什么
+
+```mermaid
+flowchart LR
+    A["已对齐输入表"] --> V["逐行检查"]
+    V --> D["D：183项序列特征"]
+    V --> M["自动在冻结 Table S2 中保留全部 mapping 候选"]
+    M -->|"成功"| H["只来自训练集的 guide/template 历史"]
+    H --> BC["B、C：1191项冻结输入"]
+    D --> F["20% D"]
+    BC --> G["47% B + 33% C"]
+    F --> S["连续活性预测"]
+    G --> S
+    M -->|"找不到"| R["明确回退到 D"]
+    D --> R
+    S --> O["原表 + 预测、排名和审计标签"]
+    R --> O
+```
+
+- D 是 35% XGBoost、59% LightGBM 和 6% MLP 的序列模型。
+- B 是 5 个 mapping-aware XGBoost 残差模型的平均。
+- C 用 guide 历史和 template 历史组成锚点，再由 XGBoost 修正。
+- 完整 v2 分数固定为 `0.20 × D + 0.47 × B + 0.33 × C`。
+
+guide 和 template 历史参考表只用 8,417 行训练数据生成，不包含固定验证集标签。
+
+## mapping 与回退怎样处理
+
+程序先去除 target 中的对齐 gap，再在冻结的 EasyDesign Table S2 模板中同时搜索正向和反向互补序列；有精确结果就保留全部精确候选，没有精确结果时才检查 IUPAC 兼容候选。程序绝不会悄悄取“第一个结果”。
+
+- 找不到候选：用 D 预测，并标记 `W_MAPPING_NOT_FOUND`。
+- 找到多个候选：全部保留，B/C 使用训练时相同的候选组合键。
+- 新 guide：历史部分回到训练集总体均值，并明确提示。
+- 新 template-key：同样回到总体均值，并明确提示。
+
+如果一个文件里同时出现完整 v2 和 D 回退行，默认不生成跨路线的 `cas12a_activity_rank`，避免把依据不同的分数强行排在一起；`cas12a_rank_within_route` 仍然存在。确实需要混合排名时使用 `--allow-mixed-ranking`，不接受回退时使用 `--fallback-policy error`。
+
+## 表现与为何保留 20/47/33
+
+SCC/Spearman 衡量排序，PCC/Pearson 衡量预测数值与真实活性的一致程度；两者都是一级指标。
+
+| 验证方式 | 系统 | SCC ↑ | PCC ↑ | RMSE ↓ | MAE ↓ | R² ↑ |
+|---|---|---:|---:|---:|---:|---:|
+| 5 折 cross-fitted meta-OOF | 旧 A+B+C | 0.8190 | 0.8119 | 0.3783 | **0.2889** | 0.6577 |
+| 5 折 cross-fitted meta-OOF | **v2 D+B+C** | **0.8213** | **0.8133** | **0.3781** | 0.2907 | **0.6579** |
+| 历史固定验证 | 旧 A+B+C | 0.8424 | 0.8325 | 0.3536 | **0.2692** | 0.6917 |
+| 历史固定验证 | **v2 D+B+C** | **0.8462** | **0.8355** | **0.3523** | 0.2707 | **0.6940** |
+
+用 D 替换 A 后，cross-fitted SCC 提高 `0.00236`，2,000 次 target-cluster bootstrap 区间为 `[+0.00106, +0.00365]`。PCC 数值提高 `0.00137`，但区间轻微跨 0。因此可以说 v2 的排序证据更强、PCC 数值方向改善，不能说所有指标都已显著提高。
+
+我们枚举了 5,151 个粗步长、20,301 个细步长总体权重，以及 101,505 个分折权重。总体数学最优约为 22.5%/47%/30.5%，但跨折重新选权重反而不如锁定的替换方案。因此 v2 保留事先存在的 20%/47%/33%，没有从固定验证集挑最好看的比例。
+
+2,217 行属于历史固定验证，不是从未看过的外部测试；多数验证记录的 guide 在训练历史中出现过。不能据此宣称模型已普遍适用于新实验体系或新 Cas12a 类型。
+
+## 验证本次发布
+
+```bash
+cas12a-ranker self-test
 python -m unittest discover -s tests -v
-python scripts/train_final_four.py --verify-only
-python scripts/train_final_four.py --smoke-test
-python scripts/reproduce_metrics.py
+python scripts/verify_repository.py
+python scripts/reproduce_v2_metrics.py
 ```
 
-完整 CPU 重训：
+完整检查会重新 mapping 10,634 行训练/验证记录，重建 B/C 特征，逐行比对 2,217 个 D、B、C 和最终预测，复算 SCC/PCC/误差指标，并核对全部权重枚举记录。
 
-```bash
-python scripts/train_final_four.py --output reproduced_run
-```
+## 引用与许可
 
-## 数据概况
+数据和原始任务来自 Huang B, Guo L, Yin H, et al., *Deep learning enhancing guide RNA design for CRISPR/Cas12a-based diagnostics*, **iMeta** (2024), [doi:10.1002/imt2.214](https://doi.org/10.1002/imt2.214)。使用时请同时引用该论文和实际采用的仓库 commit。
 
-正式 V2-2 表包含 11,992 条记录：训练 8,417、历史固定验证 2,217、量纲未确认外部记录 1,358。外部记录只为血缘保留，不进入最终监督结果声明。
-
-权威数据 SHA-256：
-
-```text
-39cda8368c216784507ac002df687b28a4f9cc6f81e2b0e84043e45eddb4c1c0
-```
-
-固定验证集没有参与最终组合权重选择，但在项目早期已经被查看，因此应称为“历史固定验证”，不能称为 untouched test。
-
-## 目录
-
-```text
-data/raw/                 上游官方仓库原样数据文件
-data/processed/v2_2/      最终特征表、manifest 和冻结 folds
-data/examples/            外部输入示例及预期预测
-src/cas12a_ml/            特征重建与模型推理
-scripts/                  预测、训练、校验和指标复算
-models/                   XGBoost/CatBoost 原生模型
-results/                  冻结逐样本结果和统计分析
-tests/                    完整性与推理回归测试
-docs/                     使用、数据、模型和复现说明
-```
-
-## 局限
-
-- 活性分数依赖当前荧光实验体系和归一化方式。
-- 验证集中多数记录的 guide 在训练中见过，对完全新 guide 的证据有限。
-- 模型会压缩极端活性范围。
-- XGBoost 与 CatBoost 的预测和残差高度相关，组合互补性较弱。
-- 新实验量纲、Cas12a ortholog 或序列处理流程需要独立校准。
-
-## 贡献、引用与许可
-
-提交 Issue 或 Pull Request 前请阅读 [CONTRIBUTING.md](CONTRIBUTING.md)。原始实验任务和数据来自 Huang 等发表于 *iMeta* 的 [EasyDesign 研究](https://doi.org/10.1002/imt2.214)；使用本仓库时应同时引用该研究和所使用的 GitHub commit。
-
-本项目原创软件采用 [Apache License 2.0](LICENSE)。`data/raw/easydesign_supplementary/` 中四个工作簿是从 Apache-2.0 的 EasyDesign 官方仓库取得并逐字节核验的未修改文件；加工数据及数据衍生研究产物按 [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) 发布，并保留来源和改动说明。精确范围、上游 commit、SHA-256 与期刊补充材料归属见[第三方声明](THIRD_PARTY_NOTICES_zh.md)。项目作者顺序与推荐软件引用仍待确认，因此本轮不添加 `CITATION.cff`。
+项目代码使用 [Apache License 2.0](LICENSE)；处理数据和数据衍生研究产物使用 [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)。具体边界见 [THIRD_PARTY_NOTICES_zh.md](THIRD_PARTY_NOTICES_zh.md)。

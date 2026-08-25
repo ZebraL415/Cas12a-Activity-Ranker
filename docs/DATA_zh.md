@@ -15,11 +15,11 @@ SHA-256：`39cda8368c216784507ac002df687b28a4f9cc6f81e2b0e84043e45eddb4c1c0`
 | 外部量纲未确认 | 1,358 | 仅保留血缘，不进入最终声明 |
 | **总计** | **11,992** | — |
 
-188 项候选输入包括：pair alignment 11、pair position 75、substitution type 12、sequence composition 32、sequence context 58。训练中 5 项为常量，部署使用 183 项；ID、标签、split 和来源映射不进入模型。
+188 项候选序列输入包括：pair alignment 11、pair position 75、substitution type 12、sequence composition 32、sequence context 58。训练中 5 项为常量，D 使用 183 项；ID、标签和 split 永远不进入模型。v2 的 B/C 在 D 输入之外加入只由训练数据生成的 guide 编码、逐位碱基对、mapping 数量、mapping 编码和 one-hot，形成冻结的 1,191 项矩阵。
 
-每个输入表示 25 个已对齐位置。本项目数据中 1–4 位为 PAM block，5–25 位为 spacer block。`-` 是 alignment gap/bulge，不是 frameshift。外部含 gap 的 target 必须预先对齐，本库不会从变长序列自行猜测 alignment。
+每个输入表示 25 个已对齐位置。本项目数据中 1–4 位为 PAM block，5–25 位为 spacer block。`-` 是 alignment gap/bulge，不是 frameshift。外部含 gap 的 target 必须预先对齐，本库不会从变长序列自行猜测 alignment；v2 会在收到已对齐 target 后自动查找冻结的 EasyDesign template，mapping 与 alignment 是两件事。
 
-OOF 五折按 target sequence 冻结，同一 target 不跨 fold。固定验证有 1,796 个不同 target，最终 59/41 权重选择没有读取该验证集；但该验证集在早期已经被查看，因此不能称为 untouched test。
+OOF 五折按 target sequence 冻结，同一 target 不跨 fold。固定验证有 1,796 个不同 target。v2 的 D/B/C 权重选择没有读取固定验证标签，guide 和 mapping 部署历史也只来自 baseline_train；但固定验证在早期已经被查看，因此不能称为 untouched test。
 
 ## 来源血缘与再分发
 

@@ -1,58 +1,101 @@
 # Usage guide
 
-## 1. Prepare an input CSV
+## Input contract
+
+Use one row per already aligned crRNA–target pair in CSV, TSV or XLSX format:
 
 ```csv
-candidate_id,crRNA_sequence,target_aligned_25
-candidate_01,TTTGTTGGGGCGTCCTTAGACGCCA,TTTGTTGGGGCGTCCTTAGACGCCA
-candidate_02,TTTGGGCTAGGTGTGATAGGAATGG,TTTGGGCTAGGAGTGATAGGAATGG
+record_id,crRNA_sequence,target_aligned_25,sample_group
+candidate_01,TTTGTTGGGGCGTCCTTAGACGCCA,TTTGTTGGGGCGTCCTTAGACGCCA,screen_1
+candidate_02,TTTGGGCTAGGTGTGATAGGAATGG,TTTGGGCTAGGAGTGATAGGAATGG,screen_1
 ```
 
-Both biological columns represent 25 aligned positions. `crRNA_sequence` accepts A/C/G/T or U. `target_aligned_25` additionally accepts `-` for an existing target gap. Input identifiers and other metadata columns are copied to the output.
+Required, case-sensitive columns:
 
-## 2. Run inference
+- `record_id`: nonempty and unique;
+- `crRNA_sequence`: exactly 25 A/C/G/T positions; U is normalized to T;
+- `target_aligned_25`: exactly 25 aligned A/C/G/T/`-` positions.
+
+All other columns and row order are preserved. The program does not create the biological alignment. It does automatically map the supplied aligned target to its frozen EasyDesign template reference, so user-supplied `mapping_*` columns are rejected.
+
+## Commands
 
 ```bash
-python scripts/predict_external.py --input candidates.csv --output predictions.csv
+cas12a-ranker predict --input candidates.csv --output predictions.csv
+cas12a-ranker predict --input candidates.tsv --output predictions.tsv
+cas12a-ranker predict --input candidates.xlsx --sheet Sheet1 --output predictions.xlsx
 ```
 
-Output columns:
+If `--output` is omitted, the result is written as `<stem>_cas12a_predictions.<extension>`.
+
+The default model is `v2`. Retained comparison routes are explicit:
+
+```bash
+cas12a-ranker predict --input candidates.csv --model d
+cas12a-ranker predict --input candidates.csv --model xgboost-legacy
+```
+
+## Output contract
 
 | Column | Interpretation |
 |---|---|
-| `prediction_xgboost_primary` | Supported primary activity score |
-| `prediction_catboost_supporting` | Supporting-model score |
-| `prediction_equal_50_50_sensitivity` | Equal-average sensitivity result |
-| `prediction_oof_weighted_exploratory` | 59/41 exploratory ensemble result |
-| `rank_xgboost_descending` | Within-file candidate rank; 1 is highest |
+| `cas12a_activity_score` | Final continuous score used for this row |
+| `cas12a_activity_rank` | Global descending rank, or blank when full/fallback routes are mixed |
+| `cas12a_rank_within_route` | Descending rank among comparable rows using the same route |
+| `cas12a_prediction_d/b/c` | Module-level predictions |
+| `cas12a_prediction_full_dbc` | Full `0.20 D + 0.47 B + 0.33 C` score; blank after mapping failure |
+| `cas12a_prediction_status` | `success`, `fallback_success` or `invalid_input` |
+| `cas12a_model_route` | `mapping_dbc_v2`, `sequence_d_fallback_v2`, or an explicitly selected old route |
+| `cas12a_mapping_*` | Mapping status, confidence, counts and every retained candidate key |
+| `cas12a_guide_seen` | Whether this guide occurs in the frozen training history |
+| `cas12a_template_key_seen` | Whether this combined mapping key occurs in training history |
+| `cas12a_*_reference_count` | Number of training records supporting that history key |
+| `cas12a_warning_codes` | Semicolon-separated row-level cautions |
 
-Scores are meaningful for ranking within the studied assay representation. They are not calibrated probabilities and should not be interpreted as patient-level diagnostic accuracy.
+Scores are assay-scale regression outputs, not probabilities or clinical thresholds.
 
-## 3. Handle gaps correctly
+## Mapping and ranking controls
 
-For a no-gap target, `target_sequence` may replace `target_aligned_25` if it is exactly 25 nt. For gap-containing examples, supply `target_aligned_25` explicitly. This repository performs feature extraction after alignment; it is not an alignment program.
-
-## 4. Validate an installation
+By default, an unmapped row receives the sequence-only D prediction and explicit warnings:
 
 ```bash
-python scripts/predict_external.py \
-  --input data/examples/external_sequence_pairs.csv \
-  --output /tmp/cas12a_predictions.csv
-
-python scripts/verify_repository.py
+cas12a-ranker predict --input candidates.csv --fallback-policy sequence
 ```
 
-The example predictions are frozen in `data/examples/expected_predictions.csv`.
+To treat any unmapped row as an error:
 
-## 5. Use the Python API
+```bash
+cas12a-ranker predict --input candidates.csv --fallback-policy error
+```
+
+If a file mixes `mapping_dbc_v2` and `sequence_d_fallback_v2`, the program withholds the global rank. It still provides `cas12a_rank_within_route`. To deliberately rank unlike routes together:
+
+```bash
+cas12a-ranker predict --input candidates.csv --allow-mixed-ranking
+```
+
+## Invalid inputs
+
+Default behavior stops before inference and writes `<stem>_input_errors.csv`. For triage, keep invalid rows while predicting valid rows:
+
+```bash
+cas12a-ranker predict --input candidates.csv --on-invalid keep
+```
+
+Invalid rows receive `cas12a_prediction_status=invalid_input` and no score. Missing headers, user mapping columns and pre-existing reserved `cas12a_` columns are fatal. Use `--overwrite-results` only to replace old `cas12a_` output columns.
+
+## Minimal verification and Python API
+
+```bash
+cas12a-ranker self-test
+cas12a-ranker predict --input data/examples/minimal_input.csv --output minimal_output.csv
+```
 
 ```python
 import pandas as pd
-from cas12a_ml import Cas12aPredictor, build_feature_frame
+from cas12a_ml import predict_file
 
-pairs = pd.read_csv("candidates.csv")
-features = build_feature_frame(pairs)
-predictions = Cas12aPredictor(".").predict(pairs)
+predict_file("candidates.csv", "predictions.csv")
+predictions = pd.read_csv("predictions.csv")
+print(predictions[["record_id", "cas12a_activity_score", "cas12a_model_route"]])
 ```
-
-When the package has not been installed, run from the repository root with `PYTHONPATH=src` or use the CLI script, which configures the source path automatically.

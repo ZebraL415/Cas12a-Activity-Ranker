@@ -2,47 +2,43 @@
 
 ```text
 Cas12a-Activity-Ranker/
-├── README.md / README_zh.md       Public project entry points
-├── LICENSE                        Apache-2.0 software license
-├── NOTICE                         Required attribution summary
-├── THIRD_PARTY_NOTICES*.md        Data/source license boundaries
-├── CONTRIBUTING.md                Contribution and protocol rules
-├── CODE_OF_CONDUCT.md             Community expectations
-├── SECURITY.md                    Responsible disclosure
-├── pyproject.toml                 Installable Python package metadata
-├── requirements.txt              Frozen runtime dependencies
+├── README.md / README_zh.md       User-first entry points
 ├── data/
-│   ├── raw/                       Unmodified upstream repository data files
-│   ├── processed/v2_2/            Final model-ready table and metadata
-│   ├── examples/                  Traceable inputs and expected predictions
-│   └── metadata/                  Public file checksums and data roles
+│   ├── raw/                       Unmodified upstream repository files
+│   ├── processed/v2_2/            Authoritative table, manifest and folds
+│   ├── examples/                  Minimal input and frozen v2 output
+│   └── metadata/                  Data roles and public checksums
 ├── src/cas12a_ml/
-│   ├── features.py                Sequence pair -> 188 frozen features
-│   └── predict.py                 Native XGBoost/CatBoost inference
-├── scripts/
-│   ├── predict_external.py        External-use CLI
-│   ├── train_final_four.py        Full final comparison/retraining
-│   ├── reproduce_metrics.py       Metrics + target-cluster bootstrap
-│   ├── verify_repository.py       End-to-end artifact validation
-│   └── generate_sha256_manifest.py
+│   ├── features.py                Aligned pair -> 188 sequence features
+│   ├── mapping.py                 All-candidate automatic template mapping
+│   ├── v2_features.py             Training-history + 1,191 B/C matrix
+│   ├── predict.py                 v2, D fallback and legacy inference
+│   ├── io.py                      Validated table-in/table-out interface
+│   └── cli.py                     Command and self-test
 ├── models/
-│   ├── primary/                   Supported XGBoost JSON model
-│   ├── supporting/                Supporting CatBoost CBM model
-│   ├── training_medians.csv       Frozen missing-value preprocessing
-│   └── model_input_metadata.json  Ordered 183 active features
-├── results/                       Frozen and independently recomputed evidence
-├── tests/                         Integrity, feature and inference tests
-├── docs/                          Usage, data, results and reproducibility
-├── reports/                       Presentation resources
-└── .github/                       CI, issue forms and PR template
+│   ├── primary/                   D XGBoost, LightGBM and MLP
+│   ├── mapping/                   B/C models, templates, histories, manifest
+│   ├── supporting/                Retained v1.0 CatBoost
+│   ├── v2_model_metadata.json     v2 weights, metrics and hashes
+│   └── d_model_metadata.json      Sequence-only D metadata
+├── results/
+│   ├── v2_dbc/                    OOF/fixed predictions and full weight audit
+│   └── v1_5_d_ensemble/           Retained D evidence
+├── scripts/
+│   ├── build_v2_references.py     Freeze training-only history/template data
+│   ├── reproduce_v2_metrics.py    Recompute v2 metrics and uncertainty
+│   ├── verify_repository.py       Full mapping/model regression
+│   └── predict_external.py        Backward-compatible command wrapper
+├── tests/                         Data, mapping, interface and inference tests
+└── docs/                          Usage, data, results and reproducibility
 ```
 
 ## Active execution chain
 
-`data/processed/v2_2/feature_manifest.csv` defines 188 candidate inputs. Five training-constant columns are removed; `models/model_input_metadata.json` freezes the remaining order of 183 features. `src/cas12a_ml/features.py` reconstructs the feature matrix from a sequence pair, and `src/cas12a_ml/predict.py` applies the stored medians and native models.
+The user supplies an aligned table. `io.py` validates every row; `features.py` builds D's sequence matrix; `mapping.py` finds every frozen template candidate; `v2_features.py` combines sequence, mapping and training-only history inputs; `predict.py` calculates D, B, C and the 20%/47%/33% score. If mapping fails, the same file records the D fallback and warnings rather than inventing unavailable inputs.
 
-`results/fixed_validation_predictions.csv` is the regression oracle used to test model portability. Public integrity is tracked by `data/metadata/sha256_manifest.tsv`.
+`results/v2_dbc/fixed_validation_predictions.csv` is the 2,217-row regression oracle. `results/v2_dbc/weight_audit/` preserves all coarse, fine and cross-fitted weight combinations. `data/metadata/sha256_manifest.tsv` tracks public file integrity.
 
-## Local-only preservation layer
+## Local-only preservation
 
-The working copy may also contain `_local_only/`, which stores original submissions, internal experiment logs, legacy joblib payloads and previous data-package layouts. The entire directory is excluded through `.gitignore` and does not belong to the public GitHub repository or active runtime.
+Working copies may contain `_local_only/` for original submissions, internal logs and legacy artifacts. It is excluded from Git and is not part of the public runtime.

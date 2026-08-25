@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Predict fluorescence-derived Cas12a diagnostic activity for sequence pairs."""
+"""Backward-compatible wrapper for table-based Cas12a activity prediction."""
 
 from __future__ import annotations
 
@@ -7,24 +7,36 @@ import argparse
 import sys
 from pathlib import Path
 
-import pandas as pd
-
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from cas12a_ml import Cas12aPredictor  # noqa: E402
+from cas12a_ml import predict_file, read_table  # noqa: E402
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--input", type=Path, required=True, help="CSV containing crRNA_sequence and target_aligned_25")
-    parser.add_argument("--output", type=Path, required=True, help="Destination CSV")
+    parser.add_argument("--input", type=Path, required=True)
+    parser.add_argument("--output", type=Path)
+    parser.add_argument("--sheet", default=0)
+    parser.add_argument("--model", choices=["v2", "d", "xgboost-legacy"], default="v2")
+    parser.add_argument("--on-invalid", choices=["error", "keep"], default="error")
+    parser.add_argument("--fallback-policy", choices=["sequence", "error"], default="sequence")
+    parser.add_argument("--allow-mixed-ranking", action="store_true")
+    parser.add_argument("--overwrite-results", action="store_true")
     args = parser.parse_args()
-    pairs = pd.read_csv(args.input, dtype=str)
-    predictions = Cas12aPredictor(ROOT).predict(pairs)
-    args.output.parent.mkdir(parents=True, exist_ok=True)
-    predictions.to_csv(args.output, index=False)
-    print(f"Predicted {len(predictions)} sequence pairs -> {args.output.resolve()}")
+    sheet = int(args.sheet) if str(args.sheet).isdigit() else args.sheet
+    destination = predict_file(
+        args.input,
+        args.output,
+        repository_root=ROOT,
+        primary_model=args.model,
+        sheet=sheet,
+        on_invalid=args.on_invalid,
+        overwrite_results=args.overwrite_results,
+        fallback_policy=args.fallback_policy,
+        allow_mixed_ranking=args.allow_mixed_ranking,
+    )
+    print(f"Predicted {len(read_table(destination))} sequence pairs -> {destination.resolve()}")
 
 
 if __name__ == "__main__":

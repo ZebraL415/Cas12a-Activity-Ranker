@@ -1,40 +1,68 @@
-# Model card
+# Model card: v2.0 mapping-aware D+B+C system
 
 ## Intended use
 
-Rank candidate 25-position Cas12a guide–target pairs by a fluorescence-derived continuous diagnostic reaction activity score, so higher-priority candidates can be tested first. The supported deployment artifact is `primary/xgboost_final.json`.
+Predict a continuous fluorescence-derived Cas12a molecular-detection activity score for an already aligned 25-position crRNA–target pair, and rank candidates supplied in the same table. SCC/Spearman and PCC/Pearson are co-primary outcomes.
 
-## Inputs and preprocessing
+This model is not intended for genome-editing efficiency, patient-level diagnosis, clinical decision-making, arbitrary sequence alignment or universal genomic search.
 
-The external interface accepts `crRNA_sequence` and an aligned target. The feature builder creates 188 pair-alignment, positional, substitution, composition and sequence-context variables. Five training constants are absent from the deployed matrix; the ordered 183 active inputs and missing-value medians are frozen in `model_input_metadata.json` and `training_medians.csv`.
+## Model
 
-For gap-containing targets, callers must supply the 25-position alignment. U is normalized to T. Ambiguous bases are rejected rather than silently imputed.
+```text
+D = 0.35 × sequence XGBoost + 0.59 × sequence LightGBM + 0.06 × sequence MLP
+v2 = 0.20 × D + 0.47 × mapping module B + 0.33 × guide-template module C
+```
 
-## Training and evaluation
+D uses 183 active sequence-derived features. B and C use a frozen 1,191-column matrix comprising those features, guide-history encodings, position-specific pair identities, mapping counts, mapping-history encodings and one-hot mapping categories. B averages five XGBoost residual models; C uses a guide/template mean anchor plus one residual XGBoost model.
 
-- Training: 8,417 records.
-- Evaluation: 2,217 historical fixed-validation records, 1,796 distinct target sequences.
-- Final OOF procedure: five frozen target-grouped folds used for ensemble-weight selection.
-- Primary XGBoost: 1,100 trees, learning rate 0.02, max depth 7, histogram method, seed 42.
-- Supporting CatBoost: 1,000 iterations, learning rate 0.02, depth 9, seed 42.
+## Inputs and automatic mapping
 
-The fixed validation set did not participate in the final 59/41 weight search, but it had been inspected in earlier development and is not an untouched test set.
+The file interface requires `record_id`, `crRNA_sequence` and `target_aligned_25`. The two sequence columns contain exactly 25 aligned positions. The user does not provide mapping columns.
 
-## Model choice
+The runtime removes target gaps, searches all frozen EasyDesign Table S2 templates in forward and reverse-complement orientations, retains all exact window hits, and tries IUPAC-compatible windows only if no exact hit exists. Multiple candidates remain a combined key; the first hit is never selected as truth.
 
-XGBoost is primary because it has the best RMSE, MAE and R², while the weighted ensemble's Spearman gain is only `0.001111` and its paired target-cluster bootstrap interval crosses zero. CatBoost, equal averaging and OOF weighting are retained for sensitivity analysis.
+If no template candidate exists, B/C are not invented: the row explicitly uses D. New guide and template keys fall back to the frozen global training mean inside the corresponding history features and receive warnings.
+
+## Training, references and selection
+
+- Training partition: 8,417 records.
+- History references: baseline training labels only.
+- OOF protocol: five frozen target-group folds.
+- D inputs: 183 active sequence features.
+- B/C inputs: 1,191 frozen features.
+- Released D/B/C weights: 0.20/0.47/0.33.
+- Weight audit: 5,151 coarse pooled, 20,301 fine pooled and 101,505 fold-specific combinations.
+
+The fine pooled optimum is 0.225/0.470/0.305, but cross-fitted reweighting underperforms the locked replacement. Fixed-validation labels were not used to select v2 weights. The fixed split was observed earlier in project development and is not an untouched external test.
+
+## Performance
+
+| Protocol | SCC | PCC | RMSE | MAE | R² |
+|---|---:|---:|---:|---:|---:|
+| Cross-fitted meta-OOF | 0.8213 | 0.8133 | 0.3781 | 0.2907 | 0.6579 |
+| Historical fixed validation | 0.8462 | 0.8355 | 0.3523 | 0.2707 | 0.6940 |
+
+Against the previous A+B+C system, cross-fitted SCC improves by 0.00236 with a paired target-cluster 95% interval of [0.00106, 0.00365]. PCC improves by 0.00137, with an interval slightly crossing zero. MAE is slightly worse. Claims should remain metric-specific.
 
 ## Limitations
 
-- The score is assay-specific and not editing efficiency, patient-level diagnostic accuracy or a mechanistic causal effect.
-- 95.4% of fixed-validation records use guides observed during training; evidence for wholly unseen guides is limited.
-- Predictions compress the extreme activity range.
-- Model complementarity is weak because XGBoost and CatBoost predictions/residuals are highly correlated.
-- Generalization to a new assay scale, ortholog or sequence-preparation protocol requires independent calibration and validation.
+- Activity is specific to the studied assay and normalization.
+- History-derived features may capture recurring guide/template or dataset context, not causal sequence biology.
+- OOF isolation is by target group, not guide; evidence for completely new guides is limited.
+- Mapping only covers the frozen EasyDesign template reference.
+- A mixed full/fallback file does not receive a global rank unless the user explicitly opts in.
+- New orthologs, assay scales and preprocessing protocols require independent validation.
 
-## Artifact formats
+## Artifacts
 
-- `xgboost_final.json`: supported version-stable Booster artifact.
-- `catboost_final.cbm`: supported native supporting-model artifact.
+- `v2_model_metadata.json`: weights, metrics, selection logic and hashes;
+- `mapping/b_seed_*.json`: five B models;
+- `mapping/c_guide_template_anchor.json`: C model;
+- `mapping/feature_manifest.csv`: ordered 1,191 inputs;
+- `mapping/table_s2_template_reference.csv`: 198 frozen mapping templates;
+- `mapping/guide_history_reference.csv`: training-only guide aggregates;
+- `mapping/mapping_history_reference.csv`: training-only mapping-key aggregates;
+- `mapping/reference_metadata.json`: reference provenance and leakage boundary;
+- `d_model_metadata.json` and `primary/d_*`: retained sequence-only D route.
 
-Native predictions were checked against all 2,217 saved validation predictions with maximum absolute difference below `1e-6`.
+All 10,634 train/validation mapping records and all 2,217 fixed-validation D/B/C/final predictions are checked against frozen references by `scripts/verify_repository.py`.

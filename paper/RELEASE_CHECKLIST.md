@@ -1,7 +1,10 @@
 # After PR approval
 
-The current task stops at the reviewable PR. These are the maintainer's next
-steps after approving its code, archives and manuscript replacements.
+The review branch and archives are ready. PR creation is deferred at the
+maintainer's request. After signing in, open
+https://github.com/ZebraL415/Cas12a-Activity-Ranker/compare/main...codex/paper-reproducibility?expand=1
+to create the PR. The review bundle supplies a ready-to-use `PR_DRAFT.md`.
+These are the subsequent steps after approving its code, archives and manuscript replacements.
 
 1. Merge the PR and record the actual merged commit SHA. Keep the original
    default model unchanged.

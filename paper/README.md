@@ -6,10 +6,12 @@ original `cas12a-ranker` tool; the default tool and its model files are unchange
 
 ## Review status
 
-This PR prepares the paper release `paper-2026-10-27`. Its four archives are
+This branch prepares the paper release `paper-2026-10-27`. Its four archives are
 review artifacts until the PR has been approved and merged. The release URL
 becomes a download route only after publication. The maintainer can install the
-local review archives with `fetch --asset-dir` in the meantime.
+local review archives with `fetch --asset-dir` in the meantime. The review
+branch is pushed; PR creation is deferred until the maintainer is ready to
+sign in. [Open the branch comparison](https://github.com/ZebraL415/Cas12a-Activity-Ranker/compare/main...codex/paper-reproducibility?expand=1).
 
 ## Start with saved results
 

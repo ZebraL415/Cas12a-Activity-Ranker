@@ -8,6 +8,15 @@
 
 ## Quick start
 
+### Manuscript results and reproducibility
+
+The [TriCasRank paper workflow](paper/README.md) provides the manuscript-specific
+four-protocol evaluations, matched EasyDesign comparison, nested selection,
+controlled perturbations and figure/table sources. It is separate from the
+earlier software-release evaluations below. The additional all-8,417 refit is
+an optional paper candidate; this update preserves the default model and CLI.
+See the [result index](paper/result_index.csv) and [release status](paper/AVAILABILITY_DRAFT.md).
+
 ### 1. Install
 
 Python 3.12 and Git LFS are required.

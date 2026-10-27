@@ -1,0 +1,4 @@
+Protocol,Records,Purpose
+Historical fixed validation,"2,217",Comparison of trained models on a fixed historical partition
+Target-grouped OOF,"8,417; 5 folds","Model development, architecture comparison and weight selection"
+Target-cluster bootstrap,"2,000 iterations",Uncertainty estimation with target-level resampling

@@ -13,6 +13,16 @@ This document separates the license for project-owned software from the terms th
 
 The Apache-2.0 license text is provided in `LICENSE`. The CC BY 4.0 license is available at <https://creativecommons.org/licenses/by/4.0/>.
 
+## Paper reproducibility materials
+
+Project-authored code and documentation under `paper/` are Apache-2.0. The
+derived inputs, predictions, statistics, figures, tables and additional fitted
+candidate in the paper-release archives follow the existing CC BY 4.0 scope
+above. The archive metadata, manifests and source index retain upstream
+attributions. The included EasyDesign SavedModel retains its upstream terms;
+the project does not relicense it. The publisher's complete supporting workbook
+is not included in the new archives.
+
 ## EasyDesign repository files
 
 The following files are byte-identical to the files published in the official [scRNA-Compt/EasyDesign](https://github.com/scRNA-Compt/EasyDesign) repository at commit `5c06a30d0a43be28a958831587f6ab706c2d4876`, verified on 2026-08-14:

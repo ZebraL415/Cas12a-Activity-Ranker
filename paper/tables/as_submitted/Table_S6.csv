@@ -1,0 +1,7 @@
+Workbook sheet,Rows,Contents
+Fold metrics,25,Fold-level metrics for the registered models
+History support,4,Guide and template history support strata
+Template support,5,Candidate-template support strata
+Activity bins,80,Calibration and error summaries across activity bins
+Guide ranking,4,Within-guide ranking summaries
+Provenance,16,Source and derivation registry for the supplementary workbook

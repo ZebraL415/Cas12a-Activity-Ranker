@@ -1,5 +1,11 @@
 # Model card: v2.0 mapping-aware D+B+C system
 
+The [paper workflow](../paper/README.md) additionally provides an audited
+all-8,417 refit through `paper/reproduce.py predict-candidate`. It is an
+independent candidate, not the model loaded by the default CLI. Manuscript
+evaluation identities and the original software-release metrics are documented
+separately in the paper result index.
+
 ## Intended use
 
 Predict a continuous fluorescence-derived Cas12a molecular-detection activity score for an already aligned 25-position crRNA–target pair, and rank candidates supplied in the same table. SCC/Spearman and PCC/Pearson are co-primary outcomes.

@@ -1,0 +1,20 @@
+name: Paper entry and statistical unit tests
+on:
+  pull_request:
+    paths: ['paper/**', '.github/workflows/paper.yml']
+  workflow_dispatch:
+jobs:
+  paper-unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r paper/config/requirements-paper.txt pytest==8.3.5
+      - run: python -m pytest paper/tests paper/engines/fixed/tests -q
+        env:
+          PYTHONPATH: paper/engines/fixed/src
+          MPLBACKEND: Agg

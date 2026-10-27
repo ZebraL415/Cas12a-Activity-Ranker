@@ -1,0 +1,5 @@
+model,status,guides,minimum_records,median_SCC,q1,q3
+D,defined,1107,5,0.6957252427829381,0.48571428571428577,0.8319329408653946
+D,undefined_constant,29,5,,,
+TriCasRank,defined,1107,5,0.7714285714285715,0.5714285714285715,0.8857142857142858
+TriCasRank,undefined_constant,29,5,,,

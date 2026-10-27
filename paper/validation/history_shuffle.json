@@ -1,0 +1,12 @@
+{
+  "H_history_multiset_and_changed_mapping": 1,
+  "H_nonhistory_inputs_unchanged": 1,
+  "H_holdout_label_not_in_feature_path": 1,
+  "H_finite_predictions": 1,
+  "H_unique_record_predictions": 1,
+  "max_absolute_prediction_error": 4.440892098500626e-16,
+  "passed": true,
+  "seed": 137,
+  "outer_fold": 0,
+  "perturbation": "history_shuffle"
+}

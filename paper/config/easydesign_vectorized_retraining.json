@@ -1,0 +1,51 @@
+{
+  "status": "frozen_before_baseline_performance",
+  "implementation": "Released EasyDesign regressor topology, vectorized LocallyConnected1D with preserved configurations and weights",
+  "source": "https://github.com/scRNA-Compt/EasyDesign",
+  "input_shape": [
+    45,
+    10
+  ],
+  "alphabet": [
+    "A",
+    "C",
+    "G",
+    "T",
+    "-"
+  ],
+  "loss": "mse (verified from released SavedModel training_config)",
+  "optimizer": "Adam",
+  "learning_rate": 0.003684121184051037,
+  "batch_size": 229,
+  "max_epochs": 450,
+  "early_stopping_patience": 25,
+  "min_delta": 0.0001,
+  "seed": 42,
+  "epoch_selection": "For each outer target fold, next existing target fold is inner validation; select best inner MSE epoch, reset, refit all outer training for that epoch count.",
+  "common_training": "Both released-regressor retraining and frozen D/B/C refits use only uniquely reconstructed-context training records.",
+  "changes": [
+    "No author augmentation, to keep one identical 30-min label per training record across methods.",
+    "Use TensorFlow 2.18 + tf-keras 2.18 for legacy SavedModel compatibility.",
+    "Gap encoding fills fifth channel, fixing missing dash in published FASTA_CODES lookup; graph architecture unchanged.",
+    "Raw linear regression output used for continuous target; classifier/shift/clamp deployment gate not used in retraining.",
+    "Vectorized local connections; original/pretrained and reset-weight forward, objective and all trainable-gradient parity verified before evaluation.",
+    "Legacy Adam in tf-keras2.18; retained released-layer kernel regularization. No change to learning rate or epoch-selection policy."
+  ],
+  "identity": "EasyDesign released regressor retrained; not claimed to reproduce full CNN12ae training pipeline or reported paper test scores.",
+  "context_rules": "All compatible mapping candidates must give identical 10 nt flanks; any incomplete candidate or conflicting flank excludes record. No label used.",
+  "label_scale": "author-supplied activity-label units",
+  "pretrained_comparison": "descriptive only; overlapping training source",
+  "context_sha256": "952140b980d780f0bb29f5c0668cb251b9cf923b93bd878bd4ab51368c84d520",
+  "coverage": {
+    "baseline_train/ambiguous_context": 2279,
+    "baseline_train/incomplete_flanks": 142,
+    "baseline_train/no_mapping": 1,
+    "baseline_train/ok": 5995,
+    "baseline_validation/ambiguous_context": 575,
+    "baseline_validation/incomplete_flanks": 46,
+    "baseline_validation/ok": 1596
+  },
+  "parity_sha256": "8f078c73fbce32001a960e26b72b38442f997a8c13a444cfc7ac78929b0512e4",
+  "native_config_sha256": "fbe8bc3100b549bd3afa139b859e189b21a07efb4c89841c9a9b45116509c94e",
+  "frozen_at": "2026-09-06T16:43:42+0800"
+}

@@ -1,0 +1,135 @@
+{
+  "allow_hyperparameter_search": false,
+  "allow_weight_search": false,
+  "candidate_fit_records": 8417,
+  "cohorts": {
+    "common_dev": {
+      "models": [
+        "D",
+        "TriCasRank",
+        "EasyDesign-adapted"
+      ],
+      "n": 5995
+    },
+    "core_dev": {
+      "models": [
+        "D",
+        "HISTORY_PRIOR",
+        "SEQ_MAPPING_XGB",
+        "D_B_FIXED",
+        "TriCasRank"
+      ],
+      "n": 8417
+    },
+    "fixed_seen": {
+      "n": 2217,
+      "use": "historical_continuity_only"
+    }
+  },
+  "easydesign": {
+    "all_four_protocols": true,
+    "do_not_inherit_author_augmentation": true,
+    "reset_and_refit": true,
+    "retain_old_epoch_rule": true,
+    "seed": "42_plus_outer_fold",
+    "shared_training_required": true,
+    "stopping_fold_adaptation": "non-target protocols change stop record IDs to preserve their own group isolation; epoch rule and hyperparameters stay fixed",
+    "stopping_validation": "next_protocol_outer_fold_within_fit"
+  },
+  "group_counts_common": {
+    "atomic_template": 20,
+    "dual_atomic": 19,
+    "guide": 1304,
+    "target": 5923
+  },
+  "group_counts_core": {
+    "atomic_template": 21,
+    "dual_atomic": 20,
+    "guide": 1341,
+    "target": 6825
+  },
+  "history_encoding": {
+    "candidate_mapping_train": "five_target_folds",
+    "guide_train": "leave_one_row_out_in_current_fit",
+    "mapping_train": "crossfit_by_current_protocol_remaining_outer_fold_ids",
+    "query": "lookup_current_fit_only",
+    "selection_nested_cv_claim": false
+  },
+  "model_public_name": "TriCasRank",
+  "model_recipe": {
+    "B_seeds": [
+      7,
+      21,
+      42,
+      84,
+      2024
+    ],
+    "C_seed": 42,
+    "D_B_weights": {
+      "B_numerator": 47,
+      "D_numerator": 20,
+      "denominator": 67
+    },
+    "D_weights": {
+      "lightgbm": 0.59,
+      "mlp": 0.06,
+      "xgb": 0.35
+    },
+    "fusion_weights": {
+      "B": 0.47,
+      "C": 0.33,
+      "D": 0.2
+    },
+    "guide_smoothing": 0.5,
+    "mapping_smoothing": 20.0,
+    "missing_mapping_route": "D",
+    "resolved_parameters_policy": "copy canonical factories after static inspection; freeze all explicit and resolved defaults before fits"
+  },
+  "outer_folds": 5,
+  "protocol_order": [
+    "target",
+    "guide",
+    "dual_atomic",
+    "atomic_template"
+  ],
+  "source_paths": {
+    "assignments": "data/inputs/assignments.csv",
+    "d_model_factory": "provenance/reference_sources/historical/run_clean_heterogeneous.py",
+    "data": "data/inputs/EasyDesign_2024_V2-2_core_context_feature_table.csv",
+    "data_sha256": "39cda8368c216784507ac002df687b28a4f9cc6f81e2b0e84043e45eddb4c1c0",
+    "easydesign_config": "config/easydesign_vectorized_retraining.json",
+    "easydesign_contexts": "data/inputs/easydesign_contexts.csv",
+    "easydesign_model": "provenance/reference_sources/easydesign/easyDesign/models/regress/cas12a",
+    "easydesign_runner": "provenance/reference_sources/easydesign/run_easydesign.py",
+    "easydesign_vectorization": "provenance/reference_sources/easydesign/easydesign_vectorized.py",
+    "guide_helper": "provenance/reference_sources/historical/run_guide_architecture.py",
+    "mapping_helper": "provenance/reference_sources/historical/run_mapping_metadata_architecture.py",
+    "old_target_predictions": "data/references/old_target_predictions.csv",
+    "paper_pipeline": "provenance/reference_sources/historical/paper_pipeline.py",
+    "project_root": ".",
+    "release_metadata": "provenance/reference_sources/historical/v2_model_metadata.json",
+    "sequence_manifest": "data/inputs/feature_manifest.csv",
+    "sequence_pair_helper": "provenance/reference_sources/historical/run_sequence_pair_architecture.py",
+    "template_reference": "data/inputs/table_s2_template_reference.csv",
+    "weight_audit": "data/references/weight_audit/fine_weight_decision.json",
+    "xgb_base_params": "provenance/reference_sources/historical/run_last_week_experiments.py"
+  },
+  "statistics": {
+    "bootstrap_draws": 2000,
+    "bootstrap_min_valid_fraction": 0.95,
+    "cluster_unit": "protocol_isolation_group",
+    "common_holm_family_size": 4,
+    "constant_correlation": "missing_with_reason",
+    "core_holm_family_size": 16,
+    "permutation_draws": 2000,
+    "primary_metric": "SCC",
+    "secondary_metrics": [
+      "PCC",
+      "RMSE",
+      "MAE",
+      "R2"
+    ],
+    "seed": 20261012
+  },
+  "validation_kind": "fixed_recipe_grouped_cv"
+}

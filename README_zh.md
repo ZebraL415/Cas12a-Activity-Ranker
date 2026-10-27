@@ -1,5 +1,9 @@
 # Cas12a Activity Ranker
 
+## 论文材料
+
+本文的四种身份划分、EasyDesign 匹配比较、嵌套选择、扰动与图表源数据，统一见 [论文复现入口](paper/README.md) 和 [结果索引](paper/result_index.csv)。这些结果与早期软件发行评估分开标识。本次追加的候选模型由全部 8,417 条开发记录重拟合，供独立入口使用；原默认模型、命令行和权重保持不变。
+
 **读取 CSV、TSV 或 XLSX 中已经对齐的 crRNA–target 序列对，逐行预测 Cas12a 荧光来源的连续活性值，并给候选排序。**
 
 [English](README.md) · [详细使用](docs/USAGE_zh.md) · [模型卡](models/MODEL_CARD_zh.md) · [结果解释](docs/RESULTS_zh.md) · [复现说明](docs/REPRODUCIBILITY_zh.md)

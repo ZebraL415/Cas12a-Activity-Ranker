@@ -1,0 +1,76 @@
+{
+  "evaluation_kind": "nested_grouped_selection",
+  "outer_folds": 5,
+  "inner_folds": "remaining_four_outer_folds",
+  "cohorts": {
+    "core_dev": 8417,
+    "common_dev": 5995
+  },
+  "protocols": [
+    "target",
+    "guide",
+    "atomic_template",
+    "dual_atomic"
+  ],
+  "grid_step": 0.05,
+  "d_original": [
+    0.35,
+    0.59,
+    0.06
+  ],
+  "db_original": [
+    0.29850746268656714,
+    0.7014925373134328
+  ],
+  "tri_original": [
+    0.2,
+    0.47,
+    0.33
+  ],
+  "tri_extra_boundary": [
+    0.29850746268656714,
+    0.7014925373134328,
+    0.0
+  ],
+  "sequence": [
+    "D_weights",
+    "DB_and_Tri_weights",
+    "model_family"
+  ],
+  "family_order": [
+    "D",
+    "SEQ_MAPPING_XGB",
+    "D_B",
+    "TriCasRank"
+  ],
+  "learners": {
+    "D": 3,
+    "SEQ_MAPPING_XGB": 1,
+    "D_B": 8,
+    "TriCasRank": 9
+  },
+  "objective": "mean_four_inner_fold_SCC",
+  "tie_tolerance": 1e-12,
+  "weight_ties": [
+    "lower_mean_MAE",
+    "lower_L1_to_original",
+    "lexicographic_weights"
+  ],
+  "family_ties": [
+    "lower_mean_MAE",
+    "fewer_learners",
+    "family_order"
+  ],
+  "undefined_scc": "candidate_requires_four_valid_folds; all_undefined_use_mean_MAE",
+  "mapping_miss": "D_selected_weights_fallback",
+  "statistics": {
+    "draws": 2000,
+    "seed": 20261013,
+    "primary_model": "SELECTED_POLICY",
+    "core_family_size": 12,
+    "common_family_size": 4,
+    "tri_nested_architecture_comparisons": "paired estimates and intervals as secondary results"
+  },
+  "source_execution": "../..",
+  "source_recipient": "."
+}

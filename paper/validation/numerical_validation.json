@@ -1,0 +1,143 @@
+{
+  "fixed_formal_statistics": {
+    "rows": 20,
+    "max_absolute_deltas": {
+      "delta_SCC": 0.0,
+      "delta_SCC_ci_low": 0.0,
+      "delta_SCC_ci_high": 0.0,
+      "delta_PCC": 0.0,
+      "delta_PCC_ci_low": 0.0,
+      "delta_PCC_ci_high": 0.0,
+      "delta_RMSE": 0.0,
+      "delta_RMSE_ci_low": 0.0,
+      "delta_RMSE_ci_high": 0.0,
+      "delta_MAE": 0.0,
+      "delta_MAE_ci_low": 0.0,
+      "delta_MAE_ci_high": 0.0,
+      "delta_R2": 0.0,
+      "delta_R2_ci_low": 0.0,
+      "delta_R2_ci_high": 0.0,
+      "p_raw": 0.0,
+      "p_holm": 0.0
+    },
+    "passed": true
+  },
+  "nested_metrics_and_intervals": {
+    "rows": 340,
+    "max_absolute_deltas": {
+      "n_records": 0.0,
+      "n_groups": 0.0,
+      "estimate": 0.0,
+      "lower": 0.0,
+      "upper": 0.0,
+      "valid_draws": 0.0,
+      "total_draws": 0.0,
+      "valid_fraction": 0.0
+    },
+    "passed": true
+  },
+  "nested_fold_metrics": {
+    "rows": 1700,
+    "max_absolute_deltas": {
+      "n": 0.0,
+      "estimate": 0.0
+    },
+    "passed": true
+  },
+  "nested_primary_comparisons": {
+    "rows": 16,
+    "max_absolute_deltas": {
+      "delta_scc": 0.0,
+      "permutation_p": 0.0,
+      "draws": 0.0,
+      "clusters": 0.0,
+      "delta_pcc": 0.0,
+      "delta_rmse": 0.0,
+      "delta_mae": 0.0,
+      "delta_r2": 0.0,
+      "delta_scc_ci_lower": 0.0,
+      "delta_scc_ci_upper": 0.0,
+      "delta_pcc_ci_lower": 0.0,
+      "delta_pcc_ci_upper": 0.0,
+      "delta_rmse_ci_lower": 0.0,
+      "delta_rmse_ci_upper": 0.0,
+      "delta_mae_ci_lower": 0.0,
+      "delta_mae_ci_upper": 0.0,
+      "delta_r2_ci_lower": 0.0,
+      "delta_r2_ci_upper": 0.0,
+      "holm_p": 0.0
+    },
+    "passed": true
+  },
+  "nested_secondary_effects": {
+    "rows": 32,
+    "max_absolute_deltas": {
+      "delta_scc": 0.0,
+      "delta_pcc": 0.0,
+      "delta_rmse": 0.0,
+      "delta_mae": 0.0,
+      "delta_r2": 0.0,
+      "delta_scc_ci_lower": 0.0,
+      "delta_scc_ci_upper": 0.0,
+      "delta_pcc_ci_lower": 0.0,
+      "delta_pcc_ci_upper": 0.0,
+      "delta_rmse_ci_lower": 0.0,
+      "delta_rmse_ci_upper": 0.0,
+      "delta_mae_ci_lower": 0.0,
+      "delta_mae_ci_upper": 0.0,
+      "delta_r2_ci_lower": 0.0,
+      "delta_r2_ci_upper": 0.0,
+      "draws": 0.0,
+      "clusters": 0.0
+    },
+    "passed": true
+  },
+  "perturbation_statistics": {
+    "rows": 30,
+    "max_absolute_deltas": {
+      "estimate": 3.9968028886505635e-15,
+      "baseline_estimate": 4.440892098500626e-16,
+      "delta": 4.399258735077183e-15,
+      "ci_low": 8.090750291955828e-15,
+      "ci_high": 5.299580219109146e-15
+    },
+    "passed": true
+  },
+  "candidate_fixture": {
+    "rows": 27,
+    "max_absolute_deltas": {
+      "score": 0.0,
+      "D": 0.0,
+      "B": 0.0,
+      "C": 0.0
+    },
+    "passed": true
+  },
+  "candidate_order_unknown_keys_and_fallback": {
+    "passed": true,
+    "fixtures": 27,
+    "mapping_misses": 1
+  },
+  "common_outer_components": {
+    "n": 1199,
+    "max_absolute_deltas": {
+      "D_xgb": 0.0,
+      "D_lightgbm": 0.0,
+      "D_mlp": 0.0,
+      "B": 0.0,
+      "C": 0.0,
+      "SEQ_MAPPING_XGB": 0.0,
+      "HISTORY_PRIOR": 0.0
+    },
+    "passed": true
+  },
+  "easydesign_stop_reset_refit": {
+    "n": 1199,
+    "max_absolute_prediction_delta": 0.0,
+    "completed": true,
+    "metadata_files": [
+      "epoch_selection.json",
+      "progress.json"
+    ]
+  }
+}

@@ -1,0 +1,21 @@
+paper_item,asset_paths,cohort,protocol,evaluation_kind,models,n_records,seeds,source_run
+Fig1 a,inputs/data/group_assignments.csv,core_dev,target,fixed_recipe_grouped_cv,all,8417,,
+Fig1 b-d; Table3,results/fixed/oof_predictions.csv;results/classics/pred__*.csv,core_dev,target,fixed_recipe_grouped_cv,Ridge;SVR;LightGBM;D;HISTORY_PRIOR;SEQ_MAPPING_XGB;TriCasRank,8417,,
+Fig1 e,results/recalculated/fixed_paired_comparisons.csv;results/recalculated/figures/figure_bootstrap.npz,core_dev,target,fixed_recipe_grouped_cv,TriCasRank minus D,8417,20261012,
+Fig1 f-g,results/fixed/oof_predictions.csv;results/recalculated/tables/Activity_bins.csv,core_dev,target,fixed_recipe_grouped_cv,TriCasRank,8417,,
+Fig2 a-d,results/development/target_components_and_blocks.csv,core_dev,target,same_capacity_2x2,block_sequence;block_mapping;block_history;block_both,8417,42,20260906T101929_target
+Fig2 e,results/perturbations/raw/history_shuffle_all_components.csv;results/perturbations/predictions/pred__tricast_full__intact.csv,core_dev,target,history_label_shuffle,TriCasRank,8417,137;271;409,20260907T130452_history_shuffle
+Fig2 f,results/perturbations/raw/mapping_permutation_all_components.csv;results/perturbations/predictions/pred__sequence_mapping_xgb__intact.csv,core_dev,target,mapping_block_permutation,SEQ_MAPPING_XGB,8417,137;271;409,20260907T130452_mapping_permutation
+Fig2 g-h,results/recalculated/tables/History_support.csv;results/recalculated/tables/Template_support.csv,core_dev,target,fixed_recipe_grouped_cv,TriCasRank;D,8417,,
+Fig3 a-h,results/development/target_components_and_blocks.csv;results/figure_sources/Fig3_fusion/,core_dev,target,component_dependence_and_removal,D;B;C;DBC_unrouted;without_D;without_B;without_C,8417,20260906,20260906T101929_target
+Fig4 a-b; Table1-2,inputs/data/group_assignments.csv,core_dev,all_four,identity_isolation,all,8417,,
+Fig4 c-g; Table5,results/fixed/oof_predictions.csv;results/recalculated/fixed_paired_comparisons.csv,core_dev,all_four,fixed_recipe_grouped_cv,D;TriCasRank,8417,20261012,
+Fig4 h,results/recalculated/tables/within_guide_values.csv,core_dev,guide,descriptive_within_guide,D;TriCasRank,8417,">=5 records;1,107 eligible guides",
+Fig4 i-j,results/fixed/oof_predictions.csv;inputs/data/common_record_ids.csv;results/fixed/run_evidence/common_target/,common_dev,target,matched_local_retraining,D;TriCasRank;EasyDesign-adapted,5995,20261012,
+Table4,paper/tables/Table4_evidence_registry.csv;results/development/legacy_DBC_vs_ABC_bootstrap.csv,development,as_labelled,development_observation,legacy ABC;DBC;D,8417,20260812,
+TableS1,results/development/target_components_and_blocks.csv;results/recalculated/development_components_and_blocks.csv,core_dev,target,development_target_oof,component models and controls,8417,,
+TableS2,results/recalculated/fixed_paired_comparisons.csv,core_dev;common_dev,all_four,fixed_recipe_grouped_cv,formal 16/4 families,8417;5995,20261012,
+TableS3; nested supplement,results/nested/predictions_oof.csv;nested/runs/;results/recalculated/nested_statistics/;results/recalculated/selection_reconstruction.csv,core_dev;common_dev,all_four,nested_grouped_selection,TriCasRank_nested;SELECTED_POLICY;fixed references,8417;5995,20261013,
+TableS4,paper/sources/labels/outcome_provenance.csv;paper/sources/labels/SOURCE_NOTES.csv,formal,all,source_provenance,30-minute published activity labels,10634,,
+TableS5,paper/tables/as_submitted/Table_S5.csv,literature,author_protocols,literature_context,EasyDesign;ActivityNN;Cas12a_predictor;DeepCas12a;ADAPT,source-specific,,
+TableS6,results/recalculated/tables/Table_S6_fold_subgroup_audit.xlsx;results/recalculated/tables/Table_S6_contents.csv,core_dev;common_dev,as_labelled,fixed_and_descriptive,seven primary models;subgroups,8417;5995,,

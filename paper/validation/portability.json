@@ -1,0 +1,37 @@
+{
+  "passed": true,
+  "installed_archives": 4,
+  "current_directory": "different directory outside the checkout",
+  "code_directory": "renamed-checkout/paper",
+  "input_directory": "renamed-inputs",
+  "output_directory": "renamed-results",
+  "full_results_command_completed": true,
+  "candidate_command_completed": true,
+  "checks": [
+    {
+      "file": "fixed_metrics.csv",
+      "rows": 192,
+      "identical": true
+    },
+    {
+      "file": "nested_metrics.csv",
+      "rows": 408,
+      "identical": true
+    },
+    {
+      "file": "fixed_paired_comparisons.csv",
+      "rows": 20,
+      "identical": true
+    },
+    {
+      "file": "perturbation_statistics.csv",
+      "rows": 30,
+      "identical": true
+    },
+    {
+      "file": "selection_reconstruction.csv",
+      "rows": 40,
+      "identical": true
+    }
+  ]
+}

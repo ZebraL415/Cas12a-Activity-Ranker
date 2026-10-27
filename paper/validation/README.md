@@ -23,10 +23,16 @@ dependencies, and a separate TensorFlow 2.18 / tf-keras 2.18 environment.
 | Additional candidate | All 27 fixtures match; reversed input order, unseen keys and no-mapping fallback checked |
 | Fig.1/Fig.4 | Editable SVG/PDF and real 600-dpi PNG; physical alignment, 5-pt glyph floor and final PDF collision checks pass |
 | S6 | Six sheets; 35/4/5/80/4/6 data rows; source counts generated from the actual workbook |
+| Moved-directory reproduction | Four archives installed into renamed input/code directories; full results, 40 selections and candidate prediction reproduced outside the original working directory |
 
 The detailed machine-readable reports accompany this directory. Archived
 experiment identifiers are retained in the data, while host-specific paths
 are replaced by package-relative references.
+
+The source preflight has two reviewed advisories: PNG is the requested raster
+format rather than TIFF, and the log-axis group counts are asserted positive
+before transformation. Final rendered PDFs have no collision or clipping
+findings, and all glyphs exceed 5 pt.
 
 ## Numerical details worth preserving
 

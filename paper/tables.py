@@ -87,7 +87,9 @@ def build(data, output):
             for cell in row:
                 cell.font=Font(name='Arial',size=10)
                 cell.alignment=Alignment(vertical='center',horizontal='right' if isinstance(cell.value,(int,float)) else 'left')
-                if isinstance(cell.value,float): cell.number_format='0.000000'
+                if isinstance(cell.value,float):
+                    field=frame.columns[cell.column-1] if cell.row>=5 else ''
+                    cell.number_format='0' if field in ('outer_fold','n','record_n','group_n','guides','minimum_records','bin','stratum_group_n','protocol_group_n') else '0.000000'
         sheet['A1'].font=Font(name='Arial',size=14,bold=True)
         for cell in sheet[4]:
             cell.fill=PatternFill('solid',fgColor='243C55');cell.font=Font(name='Arial',size=10,color='FFFFFF',bold=True)

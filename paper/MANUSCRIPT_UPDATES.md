@@ -17,6 +17,11 @@ than 0.072–0.089 in the current abstract/figure. The release retains both
 the original archived source and the new formal result, and explicitly uses
 seed 20261012 for the corrected figure and formal comparisons.
 
+Update the Table 3 SCC intervals from
+`tables/current/Table3_primary_models_with_intervals.csv`, rounding to three
+decimals. This keeps the table and the seven-model figure on the same bootstrap
+stream while preserving the verified point estimates.
+
 Suggested abstract replacement:
 
 > In five-fold target-grouped evaluation of 8,417 records, TriCasRank increased

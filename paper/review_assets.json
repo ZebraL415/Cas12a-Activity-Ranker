@@ -2,34 +2,34 @@
   "repository": "ZebraL415/Cas12a-Activity-Ranker",
   "tag": "paper-2026-10-27",
   "status": "review",
-  "repository_commit": "bd7fa4b2f453677d0640af43d222b666f65b32d5",
+  "repository_commit": "2ea275cea45554e7fbaea47b404b7d6cf32c9c91",
   "assets": [
     {
       "name": "tricasrank-paper-inputs.tar.gz",
       "directory": "inputs",
-      "bytes": 10006428,
-      "sha256": "11966a272f5ef3f3256ece9753d5fdb6e83d44420269d2c41a1c00362317a339",
+      "bytes": 10006431,
+      "sha256": "2bb6388c4cccab6a5829968ca56c4deeb63f3ec657f7b844f143d3a8094e84d4",
       "file_count": 22
     },
     {
       "name": "tricasrank-paper-results.tar.gz",
       "directory": "results",
-      "bytes": 38951782,
-      "sha256": "fda1a5d783890424fdb96fe9a375c4c530f909c60a0201d7cd4921aba679b6da",
+      "bytes": 38951828,
+      "sha256": "b22d202ad5e1163120efa14b089069914778bab9ec56dd87886c3b24fef07b4e",
       "file_count": 498
     },
     {
       "name": "tricasrank-paper-nested.tar.gz",
       "directory": "nested",
-      "bytes": 25159119,
-      "sha256": "c94da30c08b7e51ab34a840088d21ce0df58f6924861532091ae9332350d30aa",
+      "bytes": 25159131,
+      "sha256": "a08bca6ca6a291177ced8d2d1be39a6e2cf54009d0b9200c436cea520e8beeee",
       "file_count": 784
     },
     {
       "name": "tricasrank-paper-candidate.tar.gz",
       "directory": "candidate",
-      "bytes": 13598000,
-      "sha256": "9764d1facba982ff69d3eb478cb7e442a39961ccdbcd6073431de0403ae45f19",
+      "bytes": 13598006,
+      "sha256": "d0dc819134b10cf52cf24d41b375716ca2aa43205e9c5b8f7d668e577c0bd145",
       "file_count": 19
     }
   ]

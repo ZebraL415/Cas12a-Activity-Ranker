@@ -1,0 +1,7 @@
+sheet,source,derivation,evaluation
+Fold_metrics,results/fixed/oof_predictions.csv; results/classics/pred__*.csv,Five outer folds for seven primary models; five metrics recomputed,fixed_recipe_grouped_cv
+History_support,results/figure_sources/s6/History_support.csv,Target-fold guide/template-key history availability,fixed target OOF
+Template_support,results/figure_sources/s6/Template_support.csv,"Number of candidate templates, not historical support count",fixed target OOF
+Activity_bins,results/fixed/oof_predictions.csv; results/development/target_components_and_blocks.csv,Observed-order deciles/quintiles and prediction-order deciles as labelled,fixed grouped OOF
+Guide_ranking,results/fixed/oof_predictions.csv + inputs canonical guide IDs,Guide-isolated OOF; >=5 records; constant correlations remain missing,descriptive within-guide
+Provenance,paper/tables.py,Registry for this workbook,metadata

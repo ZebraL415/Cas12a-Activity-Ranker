@@ -2,6 +2,17 @@
 
 All notable public changes to this project will be documented here.
 
+## [Unreleased paper materials] - 2026-10-27
+
+- Add the independent `paper/` fetch/results/train/predict-candidate workflow.
+- Connect fixed four-protocol, nested, matched EasyDesign, perturbation and
+  historical results to their original records and run identities.
+- Recalculate 40 nested selections and the original fixed/nested statistical families.
+- Correct Fig.1/Fig.4, supply the 35-row fold sheet and six-sheet S6 workbook,
+  and document manuscript replacements without editing submitted Word files.
+- Prepare four review archives. Merge and the `paper-2026-10-27` release remain
+  subject to maintainer approval. Default software version and models are unchanged.
+
 ## [2.0.0] - 2026-08-25
 
 ### Added

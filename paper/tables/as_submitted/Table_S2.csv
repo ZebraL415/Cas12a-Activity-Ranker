@@ -1,0 +1,21 @@
+Family,Protocol,Comparison,ΔSCC (95% CI),N,Groups,Holm-adjusted P,Permutations,Scope
+Core (16),Target,TriCasRank − D,"0.080 (0.072, 0.090)",8417,6825,0.008,2000,Paired group-level prediction-swap test
+Core (16),Target,TriCasRank − History prior,"0.287 (0.271, 0.304)",8417,6825,0.008,2000,Paired group-level prediction-swap test
+Core (16),Target,TriCasRank − Sequence + mapping XGBoost,"-0.001 (-0.007, 0.005)",8417,6825,1.000,2000,Paired group-level prediction-swap test
+Core (16),Target,TriCasRank − D + B fixed,"0.001 (-0.000, 0.002)",8417,6825,0.364,2000,Paired group-level prediction-swap test
+Core (16),Guide,TriCasRank − D,"0.083 (0.069, 0.096)",8417,1341,0.008,2000,Paired group-level prediction-swap test
+Core (16),Guide,TriCasRank − History prior,"0.242 (0.223, 0.261)",8417,1341,0.008,2000,Paired group-level prediction-swap test
+Core (16),Guide,TriCasRank − Sequence + mapping XGBoost,"-0.043 (-0.052, -0.033)",8417,1341,0.008,2000,Paired group-level prediction-swap test
+Core (16),Guide,TriCasRank − D + B fixed,"0.002 (-0.000, 0.004)",8417,1341,0.411,2000,Paired group-level prediction-swap test
+Core (16),Template,TriCasRank − D,"0.004 (-0.014, 0.027)",8417,21,1.000,2000,Paired group-level prediction-swap test
+Core (16),Template,TriCasRank − History prior,"0.636 (0.482, 0.785)",8417,21,0.008,2000,Paired group-level prediction-swap test
+Core (16),Template,TriCasRank − Sequence + mapping XGBoost,"-0.050 (-0.068, -0.024)",8417,21,0.040,2000,Paired group-level prediction-swap test
+Core (16),Template,TriCasRank − D + B fixed,"-0.006 (-0.012, 0.000)",8417,21,0.411,2000,Paired group-level prediction-swap test
+Core (16),Joint,TriCasRank − D,"0.016 (0.001, 0.034)",8417,20,0.472,2000,Paired group-level prediction-swap test
+Core (16),Joint,TriCasRank − History prior,"0.702 (0.591, 0.809)",8417,20,0.008,2000,Paired group-level prediction-swap test
+Core (16),Joint,TriCasRank − Sequence + mapping XGBoost,"-0.043 (-0.056, -0.026)",8417,20,0.009,2000,Paired group-level prediction-swap test
+Core (16),Joint,TriCasRank − D + B fixed,"-0.001 (-0.004, 0.002)",8417,20,1.000,2000,Paired group-level prediction-swap test
+EasyDesign (4),Target,TriCasRank − EasyDesign-adapted,"0.173 (0.159, 0.188)",5995,5923,0.002,2000,Paired group-level prediction-swap test
+EasyDesign (4),Guide,TriCasRank − EasyDesign-adapted,"0.162 (0.142, 0.184)",5995,1304,0.002,2000,Paired group-level prediction-swap test
+EasyDesign (4),Template,TriCasRank − EasyDesign-adapted,"0.073 (0.049, 0.090)",5995,20,0.005,2000,Paired group-level prediction-swap test
+EasyDesign (4),Joint,TriCasRank − EasyDesign-adapted,"0.055 (0.028, 0.082)",5995,19,0.047,2000,Paired group-level prediction-swap test

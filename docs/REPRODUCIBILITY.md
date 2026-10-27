@@ -1,5 +1,10 @@
 # Reproducibility
 
+For manuscript-specific results, use the independent [paper workflow](../paper/README.md).
+Its fixed grouped evaluation, nested selection and historical continuity are
+explicitly separated. This page below documents the original software-release
+acceptance sequence, which remains available unchanged.
+
 ## Supported environment
 
 v2.0 targets Python 3.12. Exact package versions are pinned in `requirements.txt`; large model files use Git LFS.

@@ -1,0 +1,23 @@
+[
+  {
+    "model_id": "ridge",
+    "outer_fold": 0,
+    "n": 1683,
+    "max_absolute_delta": 4.440892098500626e-16,
+    "passed": true
+  },
+  {
+    "model_id": "svr",
+    "outer_fold": 0,
+    "n": 1683,
+    "max_absolute_delta": 4.440892098500626e-16,
+    "passed": true
+  },
+  {
+    "model_id": "lightgbm",
+    "outer_fold": 0,
+    "n": 1683,
+    "max_absolute_delta": 4.440892098500626e-16,
+    "passed": true
+  }
+]

@@ -1,0 +1,8 @@
+Model,Role and input,Records,Groups,SCC (95% CI),PCC,RMSE,MAE,R²
+Ridge,Direct sequence baseline; 183 active sequence/alignment features,8417,6825,0.640 (0.623-0.656),0.605,0.515,0.402,0.365
+SVR,Direct sequence baseline; 183 active sequence/alignment features,8417,6825,0.678 (0.664-0.692),0.651,0.493,0.375,0.420
+LightGBM,Direct sequence baseline; 183 active sequence/alignment features,8417,6825,0.738 (0.723-0.751),0.715,0.452,0.348,0.511
+D,Sequence-only ensemble; 0.35 XGBoost + 0.59 LightGBM + 0.06 MLP,8417,6825,0.741 (0.727-0.753),0.718,0.451,0.347,0.514
+History prior,Training-fold historical-prior reference,8417,6825,0.534 (0.514–0.553),0.548,0.557,0.465,0.257
+Sequence + mapping XGBoost,Matched mapping-aware single learner,8417,6825,0.822 (0.812–0.830),0.813,0.380,0.295,0.654
+TriCasRank,"Three-view system: sequence-only D, mapping-aware B, and history-anchored C; 0.20/0.47/0.33 with D fallback",8417,6825,0.821 (0.810-0.831),0.813,0.378,0.291,0.658

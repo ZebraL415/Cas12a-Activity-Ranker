@@ -1,0 +1,7 @@
+View,Feature block,Count,Description
+Sequence pair,Active sequence features,183,"Mismatch, gap, GC, composition and local sequence-context features"
+Sequence pair,Position-specific pair identities,453,Encoded nucleotide pairing at aligned positions
+Historical prior,Guide statistics,11,Smoothed training-set statistics for recurring guides
+Historical prior,Template-key statistics,12,Smoothed training-set statistics for mapped template keys
+Source context,Mapping numeric counts,4,"Candidate template hits, groups and orientations"
+Source context,Mapping category indicators,528,"Template identity, group identity and mapping status"

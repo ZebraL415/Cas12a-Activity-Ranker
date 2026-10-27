@@ -1,0 +1,36 @@
+{
+  "repository": "ZebraL415/Cas12a-Activity-Ranker",
+  "tag": "paper-2026-10-27",
+  "status": "review",
+  "repository_commit": "2ea275cea45554e7fbaea47b404b7d6cf32c9c91",
+  "assets": [
+    {
+      "name": "tricasrank-paper-inputs.tar.gz",
+      "directory": "inputs",
+      "bytes": 10006431,
+      "sha256": "2bb6388c4cccab6a5829968ca56c4deeb63f3ec657f7b844f143d3a8094e84d4",
+      "file_count": 22
+    },
+    {
+      "name": "tricasrank-paper-results.tar.gz",
+      "directory": "results",
+      "bytes": 38951828,
+      "sha256": "b22d202ad5e1163120efa14b089069914778bab9ec56dd87886c3b24fef07b4e",
+      "file_count": 498
+    },
+    {
+      "name": "tricasrank-paper-nested.tar.gz",
+      "directory": "nested",
+      "bytes": 25159131,
+      "sha256": "a08bca6ca6a291177ced8d2d1be39a6e2cf54009d0b9200c436cea520e8beeee",
+      "file_count": 784
+    },
+    {
+      "name": "tricasrank-paper-candidate.tar.gz",
+      "directory": "candidate",
+      "bytes": 13598006,
+      "sha256": "d0dc819134b10cf52cf24d41b375716ca2aa43205e9c5b8f7d668e577c0bd145",
+      "file_count": 19
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+Model,Version,Input,Protocol,N,SCC,RMSE,Use
+XGBoost baseline,ranker baseline,183 active sequence/alignment features,baseline_validation; historical fixed validation,2217,0.768,0.423,Historical early reference comparator
+XGBoost–CatBoost exploratory blend,ranker final-four exploratory,183 active sequence/alignment features,baseline_validation; historical fixed validation,2217,0.769,0.424,Historical sensitivity or early ensemble comparison
+Sequence ensemble A,pre-v2 intermediate,Sequence/pair/guide views without Table S2 mapping,baseline_validation; historical fixed validation,2217,0.797,0.399,Development milestone before mapping-aware system
+Legacy ABC,previous A+B+C,1191-context matrix for B/C plus earlier A,baseline_train; target-grouped 5-fold cross-fitted OOF,8417,0.819,0.378,Controlled comparator for release replacement
+TriCasRank,final system,183-feature D plus 1191-feature B/C context,baseline_train; target-grouped 5-fold cross-fitted OOF,8417,0.821,0.378,Reproducibility/reference cross-check
+TriCasRank,evaluation reconstruction,183-feature D plus 1191-feature B/C context,baseline_train; target-grouped 5-fold paper evaluation reconstruction,8417,0.821,0.378,Main target-isolated endpoint
+Legacy ABC,previous A+B+C,Historical A plus 1191-context B/C,baseline_validation; historical fixed validation,2217,0.842,0.354,Continuity comparison only
+TriCasRank,final system,183-feature D plus 1191-feature B/C context,baseline_validation; historical fixed validation,2217,0.846,0.352,Supplementary release continuity result
+TriCasRank,evaluation reconstruction,Common-context subset of 183-feature D plus 1191-feature B/C context,baseline_train; target-common-context cross-fitted reconstruction,5995,0.809,0.363,Matched common-context comparison only

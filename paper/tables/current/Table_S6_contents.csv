@@ -1,0 +1,7 @@
+sheet,data_rows,header_row,contents
+Fold_metrics,35,4,Five outer folds for seven primary models; five metrics recomputed
+History_support,4,4,Target-fold guide/template-key history availability
+Template_support,5,4,"Number of candidate templates, not historical support count"
+Activity_bins,80,4,Observed-order deciles/quintiles and prediction-order deciles as labelled
+Guide_ranking,4,4,Guide-isolated OOF; >=5 records; constant correlations remain missing
+Provenance,6,4,Registry for this workbook

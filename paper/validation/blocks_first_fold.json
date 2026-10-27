@@ -1,0 +1,30 @@
+[
+  {
+    "model_id": "block_sequence",
+    "outer_fold": 0,
+    "n": 1683,
+    "max_absolute_delta": 4.440892098500626e-16,
+    "passed": true
+  },
+  {
+    "model_id": "block_mapping",
+    "outer_fold": 0,
+    "n": 1683,
+    "max_absolute_delta": 4.440892098500626e-16,
+    "passed": true
+  },
+  {
+    "model_id": "block_history",
+    "outer_fold": 0,
+    "n": 1683,
+    "max_absolute_delta": 4.440892098500626e-16,
+    "passed": true
+  },
+  {
+    "model_id": "block_both",
+    "outer_fold": 0,
+    "n": 1683,
+    "max_absolute_delta": 4.440892098500626e-16,
+    "passed": true
+  }
+]

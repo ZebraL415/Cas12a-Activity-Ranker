@@ -1,0 +1,11 @@
+{
+  "I_block_shape_and_row_multiset": 1,
+  "I_sequence_and_y_unchanged": 1,
+  "I_finite_predictions": 1,
+  "I_unique_record_predictions": 1,
+  "max_absolute_prediction_error": 0.0,
+  "passed": true,
+  "seed": 137,
+  "outer_fold": 0,
+  "perturbation": "mapping_permutation"
+}

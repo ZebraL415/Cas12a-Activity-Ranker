@@ -1,0 +1,56 @@
+{
+  "common_outer_prediction_rows": 10791,
+  "common_prediction_max_delta": 4.440892098500626e-16,
+  "inner_refits": [
+    {
+      "cohort": "core_dev",
+      "inner_fold": 1,
+      "n": 1683,
+      "max_prediction_delta": 0.0
+    },
+    {
+      "cohort": "core_dev",
+      "inner_fold": 2,
+      "n": 1684,
+      "max_prediction_delta": 0.0
+    },
+    {
+      "cohort": "core_dev",
+      "inner_fold": 3,
+      "n": 1683,
+      "max_prediction_delta": 0.0
+    },
+    {
+      "cohort": "core_dev",
+      "inner_fold": 4,
+      "n": 1684,
+      "max_prediction_delta": 0.0
+    },
+    {
+      "cohort": "common_dev",
+      "inner_fold": 1,
+      "n": 1198,
+      "max_prediction_delta": 0.0
+    },
+    {
+      "cohort": "common_dev",
+      "inner_fold": 2,
+      "n": 1197,
+      "max_prediction_delta": 0.0
+    },
+    {
+      "cohort": "common_dev",
+      "inner_fold": 3,
+      "n": 1202,
+      "max_prediction_delta": 0.0
+    },
+    {
+      "cohort": "common_dev",
+      "inner_fold": 4,
+      "n": 1199,
+      "max_prediction_delta": 0.0
+    }
+  ],
+  "passed": true,
+  "easydesign_selected_epoch": 117
+}

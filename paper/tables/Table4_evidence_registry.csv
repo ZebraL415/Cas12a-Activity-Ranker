@@ -1,0 +1,6 @@
+original_row,claimed_value,verified_scope,public_formal_use,replacement
+MLP + XGBoost,MLP SCC 0.645; correlation 0.83; weight 8%,development observation; exact prediction source unresolved,archive only,Remove numeric ranking claim until the exact source is identified
+RFF-Ridge + XGBoost,RFF SCC 0.636; weight 0%,development observation; exact prediction source unresolved,archive only,Remove numeric ranking claim until the exact source is identified
+MLP + RFF-Ridge,SCC 0.666,development observation; exact prediction source unresolved,archive only,Remove numeric ranking claim until the exact source is identified
+Module D,"+0.00236 [0.00102,0.00366]",legacy cross-fitted meta OOF DBC minus ABC; seed 20260812,historical development comparison,"DBC replacement of legacy ABC: delta SCC 0.002357503; CI [0.001061233,0.003650242]"
+Module D (corrected),SCC 0.740980940,current fixed target OOF;8417 records;6825 groups,verified primary result,Report current D SCC 0.741 from the fixed evaluation

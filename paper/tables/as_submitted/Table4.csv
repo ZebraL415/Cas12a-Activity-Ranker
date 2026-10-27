@@ -1,0 +1,5 @@
+Experiment,Primary + partner,Development observation
+MLP + XGBoost,MLP (SCC = 0.645),Prediction correlation 0.83; OOF weight assigned 8% to MLP
+RFF-Ridge + XGBoost,RFF-Ridge (SCC = 0.636),OOF weight converged to 0%
+MLP + RFF-Ridge,Two weaker models,50:50 and OOF-weighted combinations both reached SCC = 0.666
+Module D,XGB + LGB + MLP,"OOF gain +0.00236; 95% CI [+0.00102, +0.00366]"

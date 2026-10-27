@@ -1,0 +1,11 @@
+cohort_id,protocol_id,selected_family,outer_folds
+common_dev,atomic_template,SEQ_MAPPING_XGB,5
+common_dev,dual_atomic,SEQ_MAPPING_XGB,5
+common_dev,guide,SEQ_MAPPING_XGB,5
+common_dev,target,SEQ_MAPPING_XGB,3
+common_dev,target,TriCasRank,2
+core_dev,atomic_template,SEQ_MAPPING_XGB,5
+core_dev,dual_atomic,SEQ_MAPPING_XGB,5
+core_dev,guide,SEQ_MAPPING_XGB,5
+core_dev,target,SEQ_MAPPING_XGB,4
+core_dev,target,TriCasRank,1
